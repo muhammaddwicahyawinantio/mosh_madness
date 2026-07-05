@@ -1,0 +1,46 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["queryCompiler", "driverAdapters"]
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  title       String
+  subtitle    String?
+  /// Harga dalam Rupiah, tanpa desimal
+  price       Int
+  /// URL delivery ImageKit
+  imageUrl    String   @db.VarChar(500)
+  /// fileId ImageKit — dipakai untuk hapus file saat produk dihapus
+  imageFileId String?
+  /// Toggle admin: tampil di Section 3 home
+  showOnHome  Boolean  @default(false)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([showOnHome, sortOrder])
+}
+
+model VisitLog {
+  id          Int      @id @default(autoincrement())
+  path        String   @db.VarChar(255)
+  /// Hash harian dari IP+UA — dedupe unique visitor tanpa simpan data mentah
+  visitorHash String   @db.VarChar(64)
+  createdAt   DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([visitorHash, createdAt])
+}
+
+model AdminUser {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+}

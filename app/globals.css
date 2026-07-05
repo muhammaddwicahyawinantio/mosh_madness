@@ -1,0 +1,259 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* ============================================================
+   MOSH MADNESS — DESIGN TOKENS (lihat DESIGN.md)
+   Dark Editorial / Minimalist Grunge. Radius 0. No shadow.
+   ============================================================ */
+
+:root,
+.dark {
+  /* --- Surfaces --- */
+  --mm-surface: #131313;
+  --mm-surface-lowest: #0e0e0e;
+  --mm-surface-low: #1c1b1b;
+  --mm-surface-container: #201f1f;
+  --mm-surface-high: #2b2a2a;
+  --mm-surface-highest: #353534;
+
+  /* --- Content --- */
+  --mm-on-surface: #e5e2e1;
+  --mm-on-surface-variant: #c4c7c8;
+  --mm-outline: #8e9192;
+  --mm-outline-variant: #444748;
+
+  /* --- Brand --- */
+  --mm-primary: #ffffff;
+  --mm-on-primary: #2f3131;
+  --mm-accent-666: #b60025;
+  --mm-on-accent-666: #ffb3b1;
+  --mm-error: #ffb4ab;
+
+  /* --- shadcn mapping (admin & base components) --- */
+  --background: var(--mm-surface);
+  --foreground: var(--mm-on-surface);
+  --card: var(--mm-surface-container);
+  --card-foreground: var(--mm-on-surface);
+  --popover: var(--mm-surface-high);
+  --popover-foreground: var(--mm-on-surface);
+  --primary: var(--mm-primary);
+  --primary-foreground: var(--mm-on-primary);
+  --secondary: var(--mm-surface-high);
+  --secondary-foreground: var(--mm-on-surface);
+  --muted: var(--mm-surface-low);
+  --muted-foreground: var(--mm-on-surface-variant);
+  --accent: var(--mm-surface-highest);
+  --accent-foreground: var(--mm-on-surface);
+  --destructive: var(--mm-accent-666);
+  --destructive-foreground: #ffffff;
+  --border: var(--mm-outline-variant);
+  --input: var(--mm-outline-variant);
+  --ring: var(--mm-outline);
+  --chart-1: #ffffff;
+  --chart-2: #b60025;
+  --chart-3: #8e9192;
+  --chart-4: #c4c7c8;
+  --chart-5: #444748;
+
+  /* Radius 0 — identitas brutalist (DESIGN.md §5) */
+  --radius: 0rem;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  /* Token brand langsung — pakai class spt bg-surface, text-accent-666 */
+  --color-surface: var(--mm-surface);
+  --color-surface-lowest: var(--mm-surface-lowest);
+  --color-surface-low: var(--mm-surface-low);
+  --color-surface-container: var(--mm-surface-container);
+  --color-surface-high: var(--mm-surface-high);
+  --color-surface-highest: var(--mm-surface-highest);
+  --color-on-surface: var(--mm-on-surface);
+  --color-on-surface-variant: var(--mm-on-surface-variant);
+  --color-outline: var(--mm-outline);
+  --color-outline-variant: var(--mm-outline-variant);
+  --color-accent-666: var(--mm-accent-666);
+  --color-on-accent-666: var(--mm-on-accent-666);
+  --color-error: var(--mm-error);
+
+  --radius-sm: 0rem;
+  --radius-md: 0rem;
+  --radius-lg: 0rem;
+  --radius-xl: 0rem;
+
+  /* Typography roles (FONT.md) — font vars diisi next/font di layout.
+     Death Stinger = display; Hold Money = body + label teknis + price. */
+  --font-display: var(--font-death-stinger), serif;
+  --font-body: var(--font-hold-money), sans-serif;
+  --font-mono: var(--font-hold-money), monospace;
+
+  --breakpoint-xl: 1440px;
+}
+
+/* ============================================================
+   BASE
+   ============================================================ */
+
+* {
+  @apply border-border;
+}
+
+html {
+  scroll-behavior: auto; /* Lenis yang handle */
+}
+
+body {
+  @apply bg-surface text-on-surface font-body antialiased;
+  font-size: 16px;
+  line-height: 24px;
+  overflow-x: clip;
+}
+
+::selection {
+  background: var(--mm-accent-666);
+  color: #ffffff;
+}
+
+/* ============================================================
+   TYPE ROLES (DESIGN.md §3)
+   ============================================================ */
+
+.type-display-xl {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 0.92;
+  font-size: clamp(3.5rem, 10vw, 7.5rem); /* 56 → 120 */
+  text-transform: uppercase;
+}
+
+.type-headline-lg {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  line-height: 0.94;
+  font-size: clamp(3rem, 5.5vw, 4rem); /* 48 → 64 */
+  text-transform: uppercase;
+}
+
+.type-headline-md {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 2rem;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.type-body-lg {
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.56;
+}
+
+.type-label {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 0.75rem;
+  line-height: 1.33;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.type-price {
+  font-family: var(--font-body); /* FONT.md: price = Hold Money */
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+/* ============================================================
+   TEXTURE & UTILITIES
+   ============================================================ */
+
+/* Blueprint grid background (DESIGN.md §4) */
+.bg-blueprint {
+  background-image:
+    linear-gradient(to right, rgb(255 255 255 / 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(255 255 255 / 0.05) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* Grain overlay — SVG turbulence, sangat subtle */
+.grain::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Vertical label desktop (DESIGN.md §4) */
+.text-vertical {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+}
+
+/* Hover invert instan — duration 0, identitas brutalist */
+.hover-invert {
+  transition: none;
+}
+.hover-invert:hover {
+  background: var(--mm-primary);
+  color: var(--mm-surface-lowest);
+}
+
+/* Marquee loop — duration dari lib/motion.ts via --marquee-duration */
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.marquee-track {
+  animation: marquee var(--marquee-duration, 15s) linear infinite;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .marquee-track {
+    animation: none;
+  }
+}

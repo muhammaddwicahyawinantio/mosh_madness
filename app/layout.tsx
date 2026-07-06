@@ -4,6 +4,7 @@ import { BRAND } from "@/lib/constants";
 import { SmoothScrollProvider } from "@/components/shared/SmoothScrollProvider";
 import { SiteChrome } from "@/components/shared/SiteChrome";
 import { TrackVisit } from "@/components/shared/TrackVisit";
+import { SmoothCursor } from "@/components/ui/smooth-cursor";
 import "./globals.css";
 
 /* Self-hosted — brand fonts (FONT.md). Build tidak tergantung font eksternal. */
@@ -46,6 +47,7 @@ export default function RootLayout({
           <TrackVisit />
           <SiteChrome>{children}</SiteChrome>
         </SmoothScrollProvider>
+        <SmoothCursor />
       </body>
     </html>
   );

@@ -41,6 +41,28 @@ export const easeBrandCss = "cubic-bezier(0.16, 1, 0.3, 1)";
 /** Spring lembut untuk pointer-follow (hero crossfade) */
 export const springSoft = { stiffness: 120, damping: 30, mass: 1 } as const;
 
+/**
+ * Smooth cursor global (components/ui/smooth-cursor.tsx) — cursor custom
+ * mengikuti pointer via spring + rotasi searah gerak. Desktop-only
+ * (pointer: fine) dan nonaktif saat prefers-reduced-motion.
+ */
+export const smoothCursor = {
+  /** Spring posisi mengejar pointer */
+  spring: { damping: 45, stiffness: 400, mass: 1, restDelta: 0.001 },
+  /** Spring rotasi mengikuti arah gerak */
+  rotationSpring: { damping: 60, stiffness: 300, mass: 1, restDelta: 0.001 },
+  /** Spring squash scale saat bergerak */
+  scaleSpring: { damping: 35, stiffness: 500, mass: 1, restDelta: 0.001 },
+  /** Spring entrance saat cursor pertama muncul */
+  introSpring: { type: "spring", stiffness: 400, damping: 30 },
+  /** Scale saat pointer sedang bergerak */
+  movingScale: 0.95,
+  /** Ambang kecepatan pointer (px/ms) untuk update rotasi */
+  speedThreshold: 0.1,
+  /** Jeda kembali ke scale normal setelah pointer berhenti (ms) */
+  restDelayMs: 150,
+} as const;
+
 /** Flick spring — lempar carousel 3D produk, ringan & responsif ke velocity */
 export const springFlick = {
   type: "spring",

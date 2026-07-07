@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef } from "react";
 import Link from "next/link";
 import useSWR from "swr";
 import { motion } from "motion/react";
@@ -9,15 +10,19 @@ import { SplitText } from "@/components/shared/SplitText";
 import { BRAND } from "@/lib/constants";
 import { jsonFetcher } from "@/lib/fetcher";
 import { duration, revealStagger, revealUp, viewportOnce } from "@/lib/motion";
+import { useSectionProgress } from "@/lib/hooks/useSectionProgress";
+import { useMediaQuery } from "@/lib/useMediaQuery";
 import type { ProductDTO } from "@/types/api";
 
 /** Polling realtime Section 3 — keputusan final: SWR ~15s + revalidate on focus */
 const REFRESH_MS = 15_000;
 
 /**
- * S3 Product Selector — cylinder 3D draggable (ProductCarousel3D).
- * Data live dari /api/products?home=true; toggle "showOnHome" admin
- * kelihatan di sini tanpa reload.
+ * S3 Product Selector — cylinder 3D yang berputar mengikuti scroll
+ * (scroll bawah → kanan, atas → kiri). Section di-pin (sticky) selama
+ * satu putaran; rotasi di-drive useSectionProgress (Lenis + fallback
+ * native) → jalan di desktop & mobile, TANPA drag/lock. Data live dari
+ * /api/products?home=true; toggle admin kelihatan tanpa reload.
  */
 export function ProductSelector() {
   const { data, error, isLoading } = useSWR<ProductDTO[]>(
@@ -27,75 +32,112 @@ export function ProductSelector() {
   );
 
   const products = data ?? [];
+  const reducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
+  const sectionRef = useRef<HTMLElement>(null);
+  // Pin + rotasi hanya kalau ada ≥2 produk dan bukan reduced-motion
+  const animate = !reducedMotion && products.length >= 2;
+  const progress = useSectionProgress(sectionRef, animate);
 
+  const header = (
+    <motion.div
+      variants={revealStagger}
+      initial="hidden"
+      whileInView="visible"
+      viewport={viewportOnce}
+      className="mb-12 flex flex-wrap items-end justify-between gap-6"
+    >
+      <div>
+        <motion.p variants={revealUp} className="type-label mb-6 text-accent-666">
+          002 / Bestseller
+        </motion.p>
+        <h2 className="type-headline-lg text-primary">
+          <SplitText text="Pilihan barisan depan" />
+        </h2>
+      </div>
+      <motion.div variants={revealUp}>
+        <Link
+          href="/product"
+          className="type-label group inline-flex items-center gap-2 border border-primary bg-primary px-6 py-3 text-on-primary hover:bg-transparent hover:text-primary"
+        >
+          Lihat semua
+          <ArrowUpRight
+            size={14}
+            className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+            style={{ transitionDuration: `${duration.fast}s` }}
+          />
+        </Link>
+      </motion.div>
+    </motion.div>
+  );
+
+  // ---------- Loading / error / kosong: layout normal tanpa pin ----------
+  if (isLoading || error || products.length === 0) {
+    return (
+      <section
+        ref={sectionRef}
+        id="bestseller"
+        aria-label="Produk unggulan"
+        className="relative mx-auto max-w-[1600px] px-4 py-32 md:px-8"
+      >
+        {header}
+        {isLoading ? (
+          <div
+            aria-hidden="true"
+            className="bg-blueprint h-[420px] animate-pulse border border-outline-variant md:h-[500px]"
+          />
+        ) : error ? (
+          <div className="bg-blueprint flex h-64 items-center justify-center border border-outline-variant">
+            <p className="type-label text-error">Gagal memuat produk — coba refresh</p>
+          </div>
+        ) : (
+          <div className="bg-blueprint flex h-64 items-center justify-center border border-outline-variant">
+            <p className="type-label text-on-surface-variant">
+              Belum ada produk di etalase — segera
+            </p>
+          </div>
+        )}
+      </section>
+    );
+  }
+
+  // ---------- Reduced motion: statis, tanpa pin ----------
+  if (!animate) {
+    return (
+      <section
+        ref={sectionRef}
+        id="bestseller"
+        aria-label="Produk unggulan"
+        className="relative mx-auto max-w-[1600px] px-4 py-32 md:px-8"
+      >
+        {header}
+        <ProductCarousel3D products={products} progress={null} />
+      </section>
+    );
+  }
+
+  // ---------- Desktop & mobile: pin + rotasi scroll-linked ----------
   return (
     <section
+      ref={sectionRef}
       id="bestseller"
       aria-label="Produk unggulan"
-      className="relative mx-auto max-w-[1600px] px-4 py-32 md:px-8"
+      className="relative h-[250vh] bg-surface"
     >
-      <span
-        aria-hidden="true"
-        className="type-label text-vertical absolute left-2 top-32 hidden text-outline lg:block"
-      >
-        Bestseller / {BRAND.sku}
-      </span>
-
-      {/* Header */}
-      <motion.div
-        variants={revealStagger}
-        initial="hidden"
-        whileInView="visible"
-        viewport={viewportOnce}
-        className="mb-12 flex flex-wrap items-end justify-between gap-6"
-      >
-        <div>
-          <motion.p variants={revealUp} className="type-label mb-6 text-accent-666">
-            002 / Bestseller
-          </motion.p>
-          <h2 className="type-headline-lg text-primary">
-            <SplitText text="Pilihan barisan depan" />
-          </h2>
-        </div>
-        <motion.div variants={revealUp}>
-          <Link
-            href="/product"
-            className="type-label group inline-flex items-center gap-2 border border-primary bg-primary px-6 py-3 text-on-primary hover:bg-transparent hover:text-primary"
+      <div className="sticky top-0 flex h-svh flex-col justify-center overflow-hidden px-4 py-16 md:px-8">
+        <div className="mx-auto w-full max-w-[1600px]">
+          <span
+            aria-hidden="true"
+            className="type-label text-vertical absolute left-2 top-24 hidden text-outline lg:block"
           >
-            Lihat semua
-            <ArrowUpRight
-              size={14}
-              className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-              style={{ transitionDuration: `${duration.fast}s` }}
-            />
-          </Link>
-        </motion.div>
-      </motion.div>
-
-      {/* Carousel 3D */}
-      {isLoading ? (
-        <div
-          aria-hidden="true"
-          className="bg-blueprint h-[420px] animate-pulse border border-outline-variant md:h-[500px]"
-        />
-      ) : error ? (
-        <div className="bg-blueprint flex h-64 items-center justify-center border border-outline-variant">
-          <p className="type-label text-error">Gagal memuat produk — coba refresh</p>
-        </div>
-      ) : products.length === 0 ? (
-        <div className="bg-blueprint flex h-64 items-center justify-center border border-outline-variant">
-          <p className="type-label text-on-surface-variant">
-            Belum ada produk di etalase — segera
-          </p>
-        </div>
-      ) : (
-        <>
-          <ProductCarousel3D products={products} />
+            Bestseller / {BRAND.sku}
+          </span>
+          {header}
+          <ProductCarousel3D products={products} progress={progress} />
           <p className="type-label mt-6 text-center text-outline">
-            Scroll / seret untuk memutar — klik untuk lihat detail
+            Scroll untuk memutar — tap untuk lihat detail
           </p>
-        </>
-      )}
+        </div>
+      </div>
     </section>
   );
 }

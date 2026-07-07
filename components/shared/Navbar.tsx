@@ -3,12 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  AnimatePresence,
-  motion,
-  useMotionValueEvent,
-  useScroll,
-} from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 import { ArrowUpRight, Menu, X } from "lucide-react";
 import { BRAND, NAV_LINKS, SOCIAL } from "@/lib/constants";
 import {
@@ -19,22 +14,17 @@ import {
 } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
-const SCROLL_THRESHOLD = 48;
-
 /**
- * Navbar global — transparan di atas hero, solid #131313 setelah scroll
- * (DESIGN.md §8). Logo Bebas italic center, links mono kiri, trigger
- * CATALOG kanan. Mobile: overlay fullscreen.
+ * Navbar global — REVISI: POLOS/tanpa background di semua state (tidak
+ * lagi berubah jadi solid saat scroll). Cuma scrim gradasi tipis di tepi
+ * atas biar teks tetap kebaca di atas konten terang (aksesibilitas), bukan
+ * bar solid. Logo display italic center — di mobile dikecilkan + di-track
+ * renggang + nowrap biar TIDAK menumpuk dengan burger/Catalog di sampingnya.
+ * Links mono kiri, trigger CATALOG kanan. Mobile: overlay fullscreen.
  */
 export function Navbar() {
-  const [solid, setSolid] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
-  const { scrollY } = useScroll();
-
-  useMotionValueEvent(scrollY, "change", (y) => {
-    setSolid(y > SCROLL_THRESHOLD);
-  });
 
   // Scroll lock saat overlay kebuka
   useEffect(() => {
@@ -46,27 +36,23 @@ export function Navbar() {
 
   return (
     <>
-      <motion.header
-        className={cn(
-          "fixed inset-x-0 top-0 z-50 border-b",
-          solid ? "border-outline-variant" : "border-transparent",
-        )}
-        initial={false}
-        animate={{
-          backgroundColor: solid ? "rgba(19, 19, 19, 1)" : "rgba(19, 19, 19, 0)",
-        }}
-        transition={{ duration: duration.fast, ease: easeSharp }}
-      >
+      <header className="fixed inset-x-0 top-0 z-50">
+        {/* Scrim gradasi tipis — bukan background bar; menjaga keterbacaan
+            teks nav di atas area terang tanpa bikin navbar keliatan solid */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 bg-gradient-to-b from-surface-lowest/55 via-surface-lowest/15 to-transparent"
+        />
         <nav
           aria-label="Utama"
-          className="mx-auto grid h-16 max-w-[1600px] grid-cols-3 items-center px-4 md:px-8"
+          className="relative mx-auto grid h-16 max-w-[1600px] grid-cols-[1fr_auto_1fr] items-center gap-2 px-4 md:px-8"
         >
           {/* Kiri: links desktop / burger mobile */}
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 justify-self-start">
             <button
               type="button"
               className="hover-invert -ml-2 p-2 lg:hidden"
-              aria-expanded={menuOpen}
+              aria-expanded={menuOpen ? "true" : "false"}
               aria-controls="mobile-menu"
               aria-label={menuOpen ? "Tutup menu" : "Buka menu"}
               onClick={() => setMenuOpen((open) => !open)}
@@ -92,10 +78,10 @@ export function Navbar() {
             </ul>
           </div>
 
-          {/* Center: logo */}
+          {/* Center: logo — kecil + renggang + nowrap di mobile, membesar di md */}
           <Link
             href="/"
-            className="type-headline-md justify-self-center italic text-primary"
+            className="justify-self-center whitespace-nowrap font-[family-name:var(--font-display)] text-lg uppercase italic leading-none tracking-[0.2em] text-primary md:text-[2rem] md:tracking-[0.06em]"
             aria-label={`${BRAND.name} — beranda`}
           >
             {BRAND.name}
@@ -115,7 +101,7 @@ export function Navbar() {
             />
           </Link>
         </nav>
-      </motion.header>
+      </header>
 
       {/* Overlay menu mobile */}
       <AnimatePresence>

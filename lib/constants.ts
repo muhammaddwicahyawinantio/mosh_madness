@@ -6,17 +6,17 @@ export const BRAND = {
   name: "Mosh Madness",
   owner: "Ilham",
   location: "Banjarmasin, Kalimantan Selatan",
-  established: "16 Mei 2024",
+  established: "17 Maret 2024",
   /** Kode glyph simbolik untuk label teknis (DESIGN.md §1) */
   sku: "MSH-666",
-  estCode: "EST. 16.05.24",
+  estCode: "EST. 17.03.24",
 } as const;
 
 export const SOCIAL = {
   /** TODO(Ilham): ganti nomor WA asli, format internasional tanpa + */
-  whatsapp: "https://wa.me/6281234567890",
+  whatsapp: "https://wa.me/6288245268848",
   /** TODO(Ilham): ganti username IG asli */
-  instagram: "https://instagram.com/moshmadness",
+  instagram: "https://instagram.com/mosh_madness",
 } as const;
 
 export const NAV_LINKS = [
@@ -35,7 +35,6 @@ export const ASSETS = {
     white: "/assets/hero/hero-white.jpeg",
   },
   about: "/assets/about/about-section.png",
-  contactTemplate: "/assets/reference/contact-template.png",
   sponsor: {
     himati: "/assets/sponsor/logo_himati.png",
     polihasnur: "/assets/sponsor/logo_polihasnur.png",
@@ -43,11 +42,3 @@ export const ASSETS = {
   },
 } as const;
 
-/**
- * Foto dummy sementara (picsum, grayscale — sesuai imagery desaturated
- * DESIGN.md §9). TODO(Ilham): ganti dengan foto asli via /admin/media,
- * cukup update URL di sini.
- */
-export const DUMMY_IMAGES = {
-  contact: "https://picsum.photos/seed/mosh-contact/1000/1250?grayscale",
-} as const;

@@ -1,161 +1,198 @@
 "use client";
 
-import { useRef } from "react";
-import dynamic from "next/dynamic";
-import {
-  motion,
-  useInView,
-  useMotionValue,
-  useScroll,
-  useTransform,
-} from "motion/react";
+import { useMemo, useRef } from "react";
 import Image from "next/image";
-import { SplitText } from "@/components/shared/SplitText";
-import { Typewriter } from "@/components/ui/typewriter-text";
+import { motion, useTransform, type MotionValue } from "motion/react";
+import { AutoVideo } from "@/components/shared/AutoVideo";
+import { useLenis } from "@/components/shared/SmoothScrollProvider";
+import { useSectionProgress } from "@/lib/hooks/useSectionProgress";
 import { ASSETS, BRAND } from "@/lib/constants";
 import { useMediaQuery } from "@/lib/useMediaQuery";
-import { useWebGLSupport } from "@/lib/webgl";
-import {
-  imageZoom,
-  revealStagger,
-  revealUp,
-  viewportOnce,
-} from "@/lib/motion";
 
-// three hanya dimuat client-side saat section mendekati viewport —
-// tidak pernah memblokir LCP (REFACTOR-02)
-const AboutScene = dynamic(() => import("./AboutScene"), { ssr: false });
+const ABOUT_VIDEO = "/assets/about/vidsectionabout.mp4";
 
 /**
- * S2 About — signature moment #2: foto about-section.png sebagai
- * background full-bleed dengan deep parallax zoom scroll-linked
- * (scale 1 → 1.15) + displacement shader halus (REFACTOR-02) + scrim
- * gelap; teks manifesto dengan typewriter di label dokumen.
+ * Peta progress pin (0→1) ke tiga momen (FRONTEND.md §2.2):
+ * intro copy fade-in → intro fade-out & video fade-in → writer per kata.
  */
-export function AboutSection() {
+const PHASE = {
+  introCopyIn: [0.0, 0.08] as [number, number],
+  crossfade: [0.28, 0.42] as [number, number],
+  writer: [0.44, 0.98] as [number, number],
+};
+
+type AboutSectionProps = {
+  /** Teks manifesto (SiteContent `about.writer`) — paragraf dipisah \n */
+  writer: string;
+};
+
+/**
+ * S2 About — REBUILD P7 (FRONTEND.md §2.2). Satu pin sticky non-nested
+ * (section ini BUKAN anak StackPanel — menghindari sticky-in-sticky yang
+ * bikin progress scroll mati). Progress di-drive langsung oleh event
+ * scroll Lenis (lenis.on('scroll') → MotionValue), lihat lenis.dev.
+ * Fase: (1) intro `about-section.png` + teks besar, (2) crossfade ke
+ * video loop + writer per kata. Gate = tinggi container; tombol Skip
+ * melompati pin. Mobile & reduced-motion: TANPA lock, dua blok statis.
+ */
+export function AboutSection({ writer }: AboutSectionProps) {
   const sectionRef = useRef<HTMLElement>(null);
+  const lenis = useLenis();
   const reducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
-  const webglOk = useWebGLSupport();
-  // Mount canvas sekali saat section mendekat, lalu biarkan terpasang;
-  // frameloop-nya yang dimatikan saat off-view
-  const hasEntered = useInView(sectionRef, {
-    once: true,
-    margin: "25% 0px",
-  });
-  const inView = useInView(sectionRef, { margin: "100px 0px" });
+  // Animasi jalan di mobile & desktop (scroll-linked, aman di sentuh);
+  // hanya reduced-motion yang dapat versi statis
+  const animate = !reducedMotion;
 
-  // Posisi pointer relatif section (0..1) — smoothing terjadi di shader
-  const mouseX = useMotionValue(0.5);
-  const mouseY = useMotionValue(0.5);
+  // Progress 0→1 melintasi tinggi section, dari event scroll Lenis
+  const progress = useSectionProgress(sectionRef, animate);
 
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start end", "end start"],
-  });
-  const bgScale = useTransform(
-    scrollYProgress,
-    [0, 1],
-    [imageZoom.from, imageZoom.to],
-  );
-  // Background bergerak lebih lambat dari konten — depth parallax
-  const bgY = useTransform(scrollYProgress, [0, 1], ["-4%", "4%"]);
+  const introOpacity = useTransform(progress, PHASE.crossfade, [1, 0]);
+  const introCopyOpacity = useTransform(progress, PHASE.introCopyIn, [0, 1]);
+  const introScale = useTransform(progress, [0, PHASE.crossfade[1]], [1.06, 1]);
+  const videoOpacity = useTransform(progress, PHASE.crossfade, [0, 1]);
 
-  const showScene = hasEntered && !reducedMotion && webglOk;
+  /** Paragraf → kata, dengan index global untuk mapping progress */
+  const paragraphs = useMemo(() => {
+    let index = 0;
+    return writer
+      .split(/\n+/)
+      .filter((p) => p.trim().length > 0)
+      .map((p) => p.split(/\s+/).map((word) => ({ word, index: index++ })));
+  }, [writer]);
+  const totalWords = paragraphs.reduce((n, words) => n + words.length, 0);
 
+  const skipToEnd = () => {
+    const section = sectionRef.current;
+    if (!section) return;
+    const rect = section.getBoundingClientRect();
+    const target = window.scrollY + rect.bottom - window.innerHeight;
+    if (lenis) lenis.scrollTo(target, { duration: 1.2 });
+    else window.scrollTo({ top: target, behavior: "smooth" });
+  };
+
+  // ---------- Reduced-motion: tanpa lock, dua blok statis ----------
+  if (!animate) {
+    return (
+      <section ref={sectionRef} id="about" aria-label="Tentang Mosh Madness">
+        {/* Fase 1 statis — png + teks */}
+        <div className="relative flex min-h-svh items-center justify-center overflow-hidden">
+          <Image src={ASSETS.about} alt="" fill sizes="100vw" className="object-cover" />
+          <div aria-hidden="true" className="absolute inset-0 bg-surface-lowest/60" />
+          <AboutIntroCopy />
+        </div>
+        {/* Fase 2 statis — video + teks penuh */}
+        <div className="relative overflow-hidden bg-surface-lowest">
+          <AutoVideo src={ABOUT_VIDEO} className="absolute inset-0 h-full w-full" />
+          <div aria-hidden="true" className="absolute inset-0 bg-surface-lowest/70" />
+          <div className="relative mx-auto max-w-3xl px-4 py-32 md:px-8">
+            <p className="type-label mb-8 text-accent-666">001 / Manifesto</p>
+            {writer.split(/\n+/).map((p, i) => (
+              <p key={i} className="type-body-lg mb-5 text-on-surface">
+                {p}
+              </p>
+            ))}
+            <p className="type-label mt-10 text-on-surface-variant">
+              {BRAND.sku} — {BRAND.location}
+            </p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // ---------- Desktop: pin sticky non-nested, 2 fase ----------
   return (
     <section
       ref={sectionRef}
       id="about"
       aria-label="Tentang Mosh Madness"
-      className="relative overflow-hidden"
-      onPointerMove={(e) => {
-        const rect = e.currentTarget.getBoundingClientRect();
-        mouseX.set((e.clientX - rect.left) / rect.width);
-        mouseY.set((e.clientY - rect.top) / rect.height);
-      }}
+      className="relative h-[300vh] bg-surface-lowest"
     >
-      {/* Background full-bleed + parallax zoom */}
-      <motion.div
-        aria-hidden="true"
-        className="absolute inset-0"
-        style={{ scale: bgScale, y: bgY }}
-      >
-        <Image
-          src={ASSETS.about}
-          alt=""
-          fill
-          sizes="100vw"
-          className="object-cover"
-        />
-        {/* Displacement layer — foto statis di bawah tetap jadi fallback */}
-        {showScene && (
-          <AboutScene mouseX={mouseX} mouseY={mouseY} active={inView} />
-        )}
-      </motion.div>
-      {/* Scrim — teks tetap kebaca, foto tetap hidup */}
-      <div
-        aria-hidden="true"
-        className="absolute inset-0 bg-gradient-to-r from-surface-lowest/90 via-surface-lowest/70 to-surface-lowest/30"
-      />
-      <div
-        aria-hidden="true"
-        className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-surface-lowest/80 to-transparent"
-      />
-
-      {/* Vertical label desktop (DESIGN.md §4) */}
-      <span
-        aria-hidden="true"
-        className="type-label text-vertical absolute left-2 top-32 z-10 hidden text-outline lg:block"
-      >
-        Tentang / {BRAND.estCode}
-      </span>
-
-      {/* Copy — dipertahankan, sekarang di atas foto */}
-      <div className="relative z-10 mx-auto max-w-[1600px] px-4 py-40 md:px-8 lg:py-48">
-        <motion.div
-          variants={revealStagger}
-          initial="hidden"
-          whileInView="visible"
-          viewport={viewportOnce}
-          className="max-w-2xl lg:ml-[8.333%]"
-        >
-          <p className="type-label mb-6 text-accent-666">
-            <Typewriter text="001 / Manifesto" />
-          </p>
-          <h2 className="type-headline-lg text-primary">
-            <SplitText text="Lahir dari" />
-            <br />
-            <SplitText text="mosh pit" delay={0.2} />
-          </h2>
-          <motion.div
-            variants={revealUp}
-            className="type-body-lg mt-8 flex flex-col gap-5 text-on-surface"
-          >
-            <p>
-              {BRAND.name} berdiri {BRAND.established} di {BRAND.location} —
-              dibangun {BRAND.owner} dari keringat barisan depan panggung.
-              Bukan sekadar pakaian: ini seragam untuk mereka yang menolak
-              jinak.
-            </p>
-            <p>
-              Angka <span className="text-accent-666">666</span> di label kami
-              bukan provokasi murahan. Ia simbol perlawanan — anti-polish,
-              anti-seragam, energi mentah yang tidak minta izin. Kegelapan kami
-              rawat sebagai bentuk seni.
-            </p>
-          </motion.div>
-          <p className="type-label mt-10 text-on-surface-variant">
-            <Typewriter
-              text={`${BRAND.sku} — Banjarmasin, Kalimantan Selatan`}
-              delay={0.4}
-            />
-          </p>
+      <div className="sticky top-0 h-svh overflow-hidden">
+        {/* Fase 2 — video + writer (lapisan bawah) */}
+        <motion.div style={{ opacity: videoOpacity }} className="absolute inset-0">
+          <AutoVideo src={ABOUT_VIDEO} className="absolute inset-0 h-full w-full" />
+          <div aria-hidden="true" className="absolute inset-0 bg-surface-lowest/70" />
+          <div className="relative flex h-full items-center">
+            <div className="mx-auto w-full max-w-3xl px-4 md:px-8">
+              <p className="type-label mb-8 text-accent-666">001 / Manifesto</p>
+              {paragraphs.map((words, pi) => (
+                <p key={pi} className="type-body-lg mb-5 text-on-surface">
+                  {words.map(({ word, index }) => (
+                    <WriterWord
+                      key={index}
+                      word={word}
+                      progress={progress}
+                      range={wordRange(index, totalWords)}
+                    />
+                  ))}
+                </p>
+              ))}
+              <p className="type-label mt-10 text-on-surface-variant">
+                {BRAND.sku} — {BRAND.location}
+              </p>
+            </div>
+          </div>
         </motion.div>
 
-        <span className="type-label absolute bottom-6 right-4 z-10 bg-surface-lowest/80 px-2 py-1 text-on-surface-variant md:right-8">
-          Doc. 001 — {BRAND.estCode}
-        </span>
+        {/* Fase 1 — intro png + teks besar (lapisan atas, fade out) */}
+        <motion.div
+          style={{ opacity: introOpacity }}
+          className="pointer-events-none absolute inset-0"
+        >
+          <motion.div style={{ scale: introScale }} className="absolute inset-0">
+            <Image src={ASSETS.about} alt="" fill sizes="100vw" className="object-cover" />
+          </motion.div>
+          <div aria-hidden="true" className="absolute inset-0 bg-surface-lowest/60" />
+          <motion.div style={{ opacity: introCopyOpacity }} className="absolute inset-0">
+            <AboutIntroCopy />
+          </motion.div>
+        </motion.div>
+
+        {/* Skip — lompati pin (FRONTEND.md §2.2 gate + skip) */}
+        <button
+          type="button"
+          onClick={skipToEnd}
+          className="type-label absolute bottom-6 right-4 z-10 border border-outline-variant bg-surface-lowest/80 px-4 py-2 text-on-surface-variant hover:border-primary hover:text-primary md:right-8"
+        >
+          Skip ↓
+        </button>
       </div>
     </section>
+  );
+}
+
+/** Rentang progress satu kata di dalam window writer */
+function wordRange(index: number, total: number): [number, number] {
+  const [start, end] = PHASE.writer;
+  const span = (end - start) / Math.max(total, 1);
+  return [start + index * span, start + (index + 1) * span];
+}
+
+function WriterWord({
+  word,
+  progress,
+  range,
+}: {
+  word: string;
+  progress: MotionValue<number>;
+  range: [number, number];
+}) {
+  const opacity = useTransform(progress, range, [0.15, 1]);
+  return <motion.span style={{ opacity }}>{word} </motion.span>;
+}
+
+/** Teks intro fase 1 — MOSH MADNESS + ABOUT + aksen 666 (spec §2.2) */
+function AboutIntroCopy() {
+  return (
+    <div className="relative flex h-full min-h-svh flex-col items-center justify-center px-4 text-center">
+      <p className="type-label mb-6 text-on-surface-variant">
+        {BRAND.estCode} — Banjarmasin
+      </p>
+      <h2 className="type-display-xl text-primary">Mosh Madness</h2>
+      <p className="type-headline-lg mt-4 text-primary">
+        About <span className="text-accent-666">/ 666</span>
+      </p>
+    </div>
   );
 }

@@ -19,7 +19,12 @@ import { useMediaQuery } from "@/lib/useMediaQuery";
  * Copy statis; h1 mix-blend-difference otomatis invert di atas area
  * yang ter-reveal putih. Touch/reduced-motion = poster statis bersih.
  */
-export function HeroSection() {
+type HeroSectionProps = {
+  /** Headline display (SiteContent `hero.word`) — \n = ganti baris */
+  word: string;
+};
+
+export function HeroSection({ word }: HeroSectionProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const hoverCapable = useMediaQuery("(hover: hover)", true);
   const reducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
@@ -58,10 +63,8 @@ export function HeroSection() {
         <p className="type-label mb-4 text-on-surface-variant">
           {BRAND.sku} / {BRAND.estCode} / BANJARMASIN
         </p>
-        <h1 className="type-display-xl mix-blend-difference text-primary">
-          Kegelapan
-          <br />
-          sebagai bentuk seni
+        <h1 className="type-display-xl mix-blend-difference whitespace-pre-line text-primary">
+          {word}
         </h1>
         <div className="mt-8 flex items-center justify-between">
           <p className="type-label max-w-[16rem] text-on-surface-variant">

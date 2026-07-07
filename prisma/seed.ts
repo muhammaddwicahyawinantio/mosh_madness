@@ -59,23 +59,33 @@ const PRODUCTS = [
 ];
 
 const SPONSORS = [
-  { name: "HIMATI", file: "logo_himati.png", sort: 0 },
-  { name: "Politeknik Hasnur", file: "logo_polihasnur.png", sort: 1 },
-  { name: "Dwiscript", file: "dwiscript.png", sort: 2 },
+  {
+    name: "HIMATI",
+    file: "logo_himati.png",
+    sort: 0,
+    link: "https://www.instagram.com/himati.polhas?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==",
+  },
+  {
+    name: "Politeknik Hasnur",
+    file: "logo_polihasnur.png",
+    sort: 1,
+    link: "https://sipha.polihasnur.ac.id/",
+  },
+  { name: "Dwiscript", file: "dwiscript.png", sort: 2, link: "https://dwiscript.my.id/" },
 ];
 
 /** Teks default section — editable via /admin/content. */
 const SITE_CONTENT: Record<string, string> = {
-  "hero.word": "MOSH MADNESS",
+  "hero.word": "Kegelapan\nsebagai bentuk seni",
   "about.writer":
-    "Mosh Madness berdiri 16 Mei 2024 di Banjarmasin, Kalimantan Selatan — dibangun Ilham dari keringat barisan depan panggung. Bukan sekadar pakaian: ini seragam untuk mereka yang menolak jinak.\n\nAngka 666 di label kami bukan provokasi murahan. Ia simbol perlawanan — anti-polish, anti-seragam, energi mentah yang tidak minta izin. Kegelapan kami rawat sebagai bentuk seni.",
-  "marquee.about": "MOSH MADNESS — EST. 16.05.24 — MSH-666",
+    "Mosh Madness adalah Sebuah Brand Fashion di Banjarmasin sejak 17 Maret 2024—dibangun oleh Ilham dari pecahan energi, keringat, dan adrenalin yang tumpah di barisan depan panggung underground. Kami menolak menjadi biasa. Apa yang kami ciptakan bukan sekadar pakaian, melainkan sebuah identitas bagi jiwa-jiwa pemberontak yang enggan tunduk pada aturan baku.Label 666 yang kami bawa berdiri tegak melampaui sekadar provokasi dangkal. Ia adalah altar perlawanan: anti-polish, anti-seragam, dan representasi dari energi liar yang menolak dikotak-kotakkan. Kami merangkul kegelapan dan merawatnya menjadi sebuah karya seni visual yang jujur. Bersiaplah melangkah melampaui batas, suarakan distorsimu, dan temukan koleksi yang memberi ruang bagi kebebasan berekspresi yang seutuhnya. Eksklusif, hanya di sini.",
+  "marquee.about": "MOSH MADNESS — EST. 17.03.24 — MSH-666",
   "marquee.product": "Kegelapan sebagai bentuk seni — 666",
-  "marquee.contact": "Bicara sama kami — MOSH MADNESS — Banjarmasin",
+  "marquee.contact": "The Art of Darkness — MOSH MADNESS — Banjarmasin",
   "contact.address": "Banjarmasin, Kalimantan Selatan",
   // TODO(Ilham): ganti WA/IG asli via /admin/content
-  "contact.whatsapp": "https://wa.me/6281234567890",
-  "contact.instagram": "https://instagram.com/moshmadness",
+  "contact.whatsapp": "https://wa.me/6288245268848",
+  "contact.instagram": "https://instagram.com/mosh_madness",
 };
 
 // ---------- Main ----------
@@ -156,7 +166,9 @@ async function main() {
         `assets/sponsor/${s.file}`,
         `Logo ${s.name}`,
       );
-      await prisma.sponsor.create({ data: { name: s.name, mediaId, sort: s.sort } });
+      await prisma.sponsor.create({
+        data: { name: s.name, mediaId, sort: s.sort, link: s.link },
+      });
     }
     console.log(`✓ ${SPONSORS.length} sponsor`);
   } else {

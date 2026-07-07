@@ -6,6 +6,7 @@ import Image from "next/image";
 import { motion } from "motion/react";
 import { SplitText } from "@/components/shared/SplitText";
 import { ASSETS, BRAND } from "@/lib/constants";
+import { logoNeedsWhiten } from "@/lib/utils";
 import { useMediaQuery } from "@/lib/useMediaQuery";
 import {
   duration,
@@ -22,24 +23,14 @@ const CHAR_COUNT = "MOSH MADNESS".length;
 const REVEAL_END =
   WORDMARK_DELAY + CHAR_COUNT * staggerChar + duration.base;
 
-/* Logo mitra di ujung kiri bawah intro — chip bulat kecil.
-   Polihasnur: file wide, crop kiri = emblem bundarnya. */
+/* Logo mitra di ujung kiri bawah intro — bentuk bebas (bukan chip bulat),
+   tanpa background. Logo gelap-monokrom (kucing dwiscript, banner navy
+   polihasnur) dijadikan siluet putih; emblem HIMATI yang berwarna dibiarkan
+   apa adanya (lihat logoNeedsWhiten) supaya identitasnya tetap kebaca. */
 const INTRO_LOGOS = [
-  {
-    src: ASSETS.sponsor.himati,
-    alt: "HIMA TI Politeknik Hasnur",
-    fit: "object-contain p-1",
-  },
-  {
-    src: ASSETS.sponsor.polihasnur,
-    alt: "Politeknik Hasnur",
-    fit: "object-cover object-left",
-  },
-  {
-    src: ASSETS.sponsor.dwiscript,
-    alt: "Dwiscript",
-    fit: "object-contain p-0.5",
-  },
+  { src: ASSETS.sponsor.himati, alt: "HIMA TI Politeknik Hasnur" },
+  { src: ASSETS.sponsor.polihasnur, alt: "Politeknik Hasnur" },
+  { src: ASSETS.sponsor.dwiscript, alt: "Dwiscript" },
 ] as const;
 
 /**
@@ -124,10 +115,10 @@ export function IntroReveal() {
         </motion.p>
       </motion.div>
 
-      {/* Logo mitra — ujung kiri bawah, chip bulat kecil (REVISI intro).
-          Ikut terangkat wipe overlay saat intro selesai. */}
+      {/* Logo mitra — ujung kiri bawah, bentuk bebas & tanpa background
+          (REVISI intro): siluet putih. Ikut terangkat wipe saat selesai. */}
       <motion.div
-        className="absolute bottom-6 left-6 flex items-center gap-3 md:bottom-8 md:left-8"
+        className="absolute bottom-6 left-6 flex items-center gap-5 md:bottom-8 md:left-8 md:gap-7"
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{
@@ -137,18 +128,18 @@ export function IntroReveal() {
         }}
       >
         {INTRO_LOGOS.map((logo) => (
-          <span
+          <Image
             key={logo.src}
-            className="relative block h-10 w-10 overflow-hidden rounded-full bg-white/95"
-          >
-            <Image
-              src={logo.src}
-              alt={logo.alt}
-              fill
-              sizes="40px"
-              className={logo.fit}
-            />
-          </span>
+            src={logo.src}
+            alt={logo.alt}
+            width={140}
+            height={40}
+            className={
+              logoNeedsWhiten(logo.src)
+                ? "h-7 w-auto object-contain opacity-80 [filter:brightness(0)_invert(1)] md:h-9"
+                : "h-8 w-auto object-contain opacity-90 md:h-10"
+            }
+          />
         ))}
       </motion.div>
     </motion.div>

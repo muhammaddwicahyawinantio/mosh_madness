@@ -1,6 +1,6 @@
 # CLAUDE.md — Mosh Madness
 
-Brand fashion streetwear premium, dark-artistic. Owner: Ilham (Banjarmasin, est. 16 Mei 2024).
+Brand fashion streetwear premium, dark-artistic. Owner: Ilham (Banjarmasin, est. 17 Maret 2024).
 File ini dibaca Claude Code tiap sesi. Untuk detail, buka spec di bawah.
 
 ## Spec files (WAJIB dibaca sebelum ngoding)

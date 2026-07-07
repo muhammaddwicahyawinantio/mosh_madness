@@ -1,78 +1,48 @@
 "use client";
 
-import { memo, useCallback, useRef } from "react";
+import { memo } from "react";
 import Link from "next/link";
-import {
-  motion,
-  useAnimationControls,
-  useMotionValue,
-  type MotionValue,
-} from "motion/react";
+import { motion, useTransform, type MotionValue } from "motion/react";
 import { SafeImage } from "@/components/shared/SafeImage";
-import { useScrollLockedCarousel } from "@/lib/hooks/useScrollLockedCarousel";
 import { useMediaQuery } from "@/lib/useMediaQuery";
-import { duration, easeBrand, springFlick } from "@/lib/motion";
 import { formatRupiah } from "@/lib/utils";
 import type { ProductDTO } from "@/types/api";
 
-/** Reveal blur transien untuk img carousel — durasi dari lib/motion */
-const revealTransition = { duration: duration.fast, ease: easeBrand };
-
 /**
- * Cylinder 3D — tiap face satu produk, klik/tap navigasi ke
- * /product/[id] (REFACTOR-03: TANPA lightbox/preview). Title + harga
- * selalu terlihat di bawah imagery, bukan on-hover.
+ * Cylinder 3D — tiap face satu produk, tap/klik navigasi ke /product/[id].
+ * Rotasi TIDAK lagi lewat drag/scroll-lock: di-drive langsung oleh
+ * progress scroll section (scroll ke bawah → putar kanan, ke atas →
+ * putar kiri). Murni CSS 3D transform + satu MotionValue → ringan &
+ * jalan di mobile.
  */
 const Cylinder = memo(function Cylinder({
   products,
-  controls,
   rotation,
 }: {
   products: ProductDTO[];
-  controls: ReturnType<typeof useAnimationControls>;
   rotation: MotionValue<number>;
 }) {
   const isScreenSm = useMediaQuery("(max-width: 640px)");
-  const cylinderWidth = isScreenSm ? 1100 : 1800;
+  // Desktop diperbesar (1800 → 2200): radius & lebar face naik → gambar
+  // depan tampil lebih besar. Mobile (1100) dibiarkan — sudah pas.
+  const cylinderWidth = isScreenSm ? 1100 : 2200;
   const faceCount = Math.max(products.length, 1);
   const faceWidth = cylinderWidth / faceCount;
   const radius = cylinderWidth / (2 * Math.PI);
-  // Guard klik-vs-drag: drag baru saja selesai = jangan navigasi
-  const draggingRef = useRef(false);
 
   return (
     <div
       className="flex h-full items-center justify-center"
-      style={{
-        perspective: "1000px",
-        transformStyle: "preserve-3d",
-        willChange: "transform",
-      }}
+      style={{ perspective: "1000px", transformStyle: "preserve-3d" }}
     >
       <motion.div
-        drag="x"
-        dragMomentum={false}
-        className="relative flex h-full origin-center cursor-grab justify-center active:cursor-grabbing"
+        className="relative flex h-full origin-center justify-center"
         style={{
           rotateY: rotation,
           width: cylinderWidth,
           transformStyle: "preserve-3d",
+          willChange: "transform",
         }}
-        onDragStart={() => {
-          draggingRef.current = true;
-        }}
-        onDrag={(_, info) => rotation.set(rotation.get() + info.delta.x * 0.05)}
-        onDragEnd={(_, info) => {
-          controls.start({
-            rotateY: rotation.get() + info.velocity.x * 0.05,
-            transition: springFlick,
-          });
-          // click event datang SETELAH dragend — reset di frame berikutnya
-          window.setTimeout(() => {
-            draggingRef.current = false;
-          }, 0);
-        }}
-        animate={controls}
       >
         {products.map((product, i) => (
           <div
@@ -89,26 +59,18 @@ const Cylinder = memo(function Cylinder({
             <Link
               href={`/product/${product.id}`}
               draggable={false}
-              onClick={(e) => {
-                if (draggingRef.current) e.preventDefault();
-              }}
               className="group flex w-full flex-col"
             >
-              <motion.div
-                className="relative aspect-[3/4] w-full overflow-hidden border border-outline-variant"
-                initial={{ filter: "blur(4px)" }}
-                animate={{ filter: "blur(0px)" }}
-                transition={revealTransition}
-              >
+              <div className="relative aspect-[3/4] w-full overflow-hidden border border-outline-variant">
                 <SafeImage
                   src={product.imageUrl}
                   alt={product.title}
                   fill
-                  sizes="(max-width: 640px) 40vw, 300px"
+                  sizes="(max-width: 640px) 40vw, 360px"
                   draggable={false}
                   className="object-cover"
                 />
-              </motion.div>
+              </div>
               {/* Title + harga selalu tampak (REFACTOR-03 card content) */}
               <span className="mt-3 flex flex-col gap-1">
                 <span className="type-label text-primary group-hover:text-on-surface-variant">
@@ -126,27 +88,21 @@ const Cylinder = memo(function Cylinder({
   );
 });
 
-export function ProductCarousel3D({ products }: { products: ProductDTO[] }) {
-  const wrapperRef = useRef<HTMLDivElement>(null);
-  const controls = useAnimationControls();
-  const rotation = useMotionValue(0);
+/**
+ * @param progress MotionValue 0→1 dari scroll section (useSectionProgress).
+ *   Dipetakan ke rotasi cylinder. `null` → tampil statis (reduced-motion).
+ */
+export function ProductCarousel3D({
+  products,
+  progress,
+}: {
+  products: ProductDTO[];
+  progress: MotionValue<number> | null;
+}) {
   const reducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
-  // Scroll-lock hanya desktop (keputusan final REFACTOR-03):
-  // pointer halus + hover — touch device pakai drag/swipe biasa
-  const isDesktop = useMediaQuery("(hover: hover) and (pointer: fine)");
 
-  const stopFlick = useCallback(() => controls.stop(), [controls]);
-
-  useScrollLockedCarousel({
-    targetRef: wrapperRef,
-    rotation,
-    faceCount: products.length,
-    enabled: isDesktop && !reducedMotion,
-    onEngage: stopFlick,
-  });
-
-  // Reduced motion → row statis, tetap bisa scroll & klik
-  if (reducedMotion) {
+  // Reduced motion / tanpa progress → row statis, tetap bisa scroll & klik
+  if (reducedMotion || !progress) {
     return (
       <div className="flex snap-x gap-px overflow-x-auto border border-outline-variant bg-outline-variant">
         {products.map((product) => (
@@ -171,12 +127,23 @@ export function ProductCarousel3D({ products }: { products: ProductDTO[] }) {
     );
   }
 
+  return <RotatingCarousel products={products} progress={progress} />;
+}
+
+function RotatingCarousel({
+  products,
+  progress,
+}: {
+  products: ProductDTO[];
+  progress: MotionValue<number>;
+}) {
+  // Satu putaran penuh melintasi pin section. Progress naik (scroll bawah)
+  // → rotateY makin negatif = putar ke kanan; scroll atas membalik.
+  const rotation = useTransform(progress, [0, 1], [0, -360]);
+
   return (
-    <div
-      ref={wrapperRef}
-      className="relative h-[480px] w-full overflow-hidden md:h-[560px]"
-    >
-      <Cylinder products={products} controls={controls} rotation={rotation} />
+    <div className="relative h-[380px] w-full overflow-hidden sm:h-[520px] md:h-[640px]">
+      <Cylinder products={products} rotation={rotation} />
     </div>
   );
 }

@@ -1,3 +1,4 @@
+
 -- CreateTable
 CREATE TABLE `MediaAsset` (
     `id` VARCHAR(191) NOT NULL,

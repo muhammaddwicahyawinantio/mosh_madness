@@ -32,7 +32,7 @@ export const metadata: Metadata = {
     template: `%s — ${BRAND.name}`,
   },
   description:
-    "Mosh Madness. Streetwear dari Banjarmasin. Kegelapan sebagai bentuk seni — est. 16.05.24.",
+    "Mosh Madness. Streetwear dari Banjarmasin. Kegelapan sebagai bentuk seni — est. 17.03.24.",
 };
 
 export default function RootLayout({

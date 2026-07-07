@@ -1,16 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  images: {
-    remotePatterns: [
-      // Foto dummy sementara (lihat DUMMY_IMAGES di lib/constants.ts)
-      {
-        protocol: "https",
-        hostname: "picsum.photos",
-        pathname: "/**",
-      },
-    ],
-  },
+  // Docker/Railway (BACKEND.md §8) — server.js self-contained di .next/standalone
+  output: "standalone",
 };
 
 export default nextConfig;

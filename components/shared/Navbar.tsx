@@ -52,7 +52,7 @@ export function Navbar() {
             <button
               type="button"
               className="hover-invert -ml-2 p-2 lg:hidden"
-              aria-expanded={menuOpen ? "true" : "false"}
+              aria-expanded={menuOpen}
               aria-controls="mobile-menu"
               aria-label={menuOpen ? "Tutup menu" : "Buka menu"}
               onClick={() => setMenuOpen((open) => !open)}

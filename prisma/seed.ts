@@ -9,13 +9,12 @@
  */
 import { statSync } from "fs";
 import path from "path";
-import { PrismaClient } from "@prisma/client";
-import { PrismaMariaDb } from "@prisma/adapter-mariadb";
 import bcrypt from "bcryptjs";
+import { prisma } from "../lib/prisma";
 
-const url = process.env.DATABASE_URL;
-if (!url) throw new Error("DATABASE_URL belum di-set");
-const prisma = new PrismaClient({ adapter: new PrismaMariaDb(url) });
+if (!process.env.DATABASE_URL) {
+  throw new Error("DATABASE_URL belum di-set");
+}
 
 // ---------- Static media ----------
 

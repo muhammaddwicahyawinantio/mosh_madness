@@ -1,10 +1,15 @@
 const bcrypt = require('bcryptjs');
 const { PrismaClient } = require('@prisma/client');
 
+const globalForPrisma = globalThis;
+if (!globalForPrisma.__prisma) {
+  globalForPrisma.__prisma = new PrismaClient();
+}
+const prisma = globalForPrisma.__prisma;
+
 (async () => {
-  const p = new PrismaClient();
   try {
-    const u = await p.adminUser.findUnique({ where: { email: 'admin@moshmadness.id' } });
+    const u = await prisma.adminUser.findUnique({ where: { email: 'admin@moshmadness.id' } });
     if (!u) {
       console.log('NOT_FOUND');
       return;
@@ -17,7 +22,5 @@ const { PrismaClient } = require('@prisma/client');
     console.log('match:', ok);
   } catch (e) {
     console.error('ERROR', e);
-  } finally {
-    await p.$disconnect();
   }
 })();

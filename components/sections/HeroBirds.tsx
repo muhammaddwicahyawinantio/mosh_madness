@@ -60,14 +60,16 @@ export function HeroBirds() {
     const size =
       heroBirds.sizeMin + rand(i, 2) * (heroBirds.sizeMax - heroBirds.sizeMin);
     const reverse = rand(i, 3) > 0.5;
+    // toFixed(4) — presisi konsisten antara Node.js (SSR) dan browser (client)
+    // tanpa ini, Math.sin bisa menghasilkan digit berbeda di env berbeda
     return {
-      top: 5 + rand(i, 4) * 52, // langit: 5%–57% tinggi hero
+      top: parseFloat((5 + rand(i, 4) * 52).toFixed(4)),
       size: Math.round(size),
-      drift,
-      // Delay negatif = burung tersebar di sepanjang lintasan sejak awal
-      delay: -rand(i, 5) * drift,
+      drift: parseFloat(drift.toFixed(4)),
+      delay: parseFloat((-rand(i, 5) * drift).toFixed(4)),
       reverse,
-      flyDelay: rand(i, 6) * heroBirds.flyUpStaggerMax,
+      flyDelay: parseFloat((rand(i, 6) * heroBirds.flyUpStaggerMax).toFixed(4)),
+      bobDelay: parseFloat((-rand(i, 7) * heroBirds.bob).toFixed(4)),
       mobile: i < heroBirds.countMobile,
     };
   });
@@ -108,7 +110,7 @@ export function HeroBirds() {
               style={
                 {
                   "--bird-bob": `${heroBirds.bob}s`,
-                  "--bird-delay": `${-rand(i, 7) * heroBirds.bob}s`,
+                  "--bird-delay": `${b.bobDelay}s`,
                 } as BirdVars
               }
             >

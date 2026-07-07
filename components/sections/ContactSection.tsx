@@ -20,7 +20,6 @@ import {
   revealStagger,
   revealUp,
   viewportOnce,
-  wipeUp,
 } from "@/lib/motion";
 
 type SubmitStatus = "idle" | "sending" | "sent" | "error";
@@ -110,12 +109,24 @@ export function ContactSection({
       />
 
       <div className="relative mx-auto max-w-6xl px-4 py-12 md:px-8 md:py-28">
-        {/* kiri.mp4 — mobile: blok di atas form; desktop: pojok kiri-atas */}
-        <ContactReel
-          src="/assets/videos/kiri.mp4"
-          label="Reel / kiri"
-          className="mx-auto mb-8 w-full max-w-[200px] lg:absolute lg:left-0 lg:top-6 lg:mb-0 lg:w-52 lg:max-w-none xl:w-60"
-        />
+        {/* kiri.mp4 — pojok kiri-atas, tidak menutupi form */}
+        <motion.figure
+          variants={revealUp}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.1 }}
+          aria-hidden="true"
+          className="pointer-events-none mx-auto mb-6 w-full max-w-[260px] border border-outline-variant bg-white/5 p-1.5 lg:absolute lg:left-0 lg:top-6 lg:mb-0 lg:w-64 lg:max-w-none xl:w-80"
+        >
+          <AutoVideo
+            src="/assets/videos/kiri.mp4"
+            eager
+            className="aspect-[9/16] w-full border border-outline-variant"
+          />
+          <figcaption className="type-label px-1 pb-0.5 pt-1.5 text-[10px] text-on-surface-variant md:text-xs">
+            Reel / Mosh — 666
+          </figcaption>
+        </motion.figure>
 
         {/* Konten form — standar, di tengah, di antara kedua reel */}
         <motion.div
@@ -259,54 +270,29 @@ export function ContactSection({
           </form>
         </motion.div>
 
-        {/* kanan.mp4 — mobile: blok di bawah form; desktop: pojok kanan-bawah */}
-        <ContactReel
-          src="/assets/videos/kanan.mp4"
-          label="Reel / kanan"
-          className="mx-auto mt-8 w-full max-w-[200px] lg:absolute lg:bottom-6 lg:right-0 lg:mt-0 lg:w-52 lg:max-w-none xl:w-60"
-        />
+        {/* kanan.mp4 — pojok kanan-bawah, tidak menutupi form */}
+        <motion.figure
+          variants={revealUp}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.1 }}
+          aria-hidden="true"
+          className="pointer-events-none mx-auto mt-6 w-full max-w-[260px] border border-outline-variant bg-white/5 p-1.5 lg:absolute lg:bottom-6 lg:right-0 lg:mt-0 lg:w-64 lg:max-w-none xl:w-80"
+        >
+          <AutoVideo
+            src="/assets/videos/kanan.mp4"
+            eager
+            className="aspect-[9/16] w-full border border-outline-variant"
+          />
+          <figcaption className="type-label px-1 pb-0.5 pt-1.5 text-[10px] text-on-surface-variant md:text-xs">
+            Reel / kanan — 666
+          </figcaption>
+        </motion.figure>
       </div>
     </section>
   );
 }
 
-/**
- * Reel dekoratif — video loop tanpa henti (AutoVideo eager) di dalam kartu
- * bertepi tajam. pointer-events-none → dijamin TIDAK memblokir form.
- * Reveal wipe on-scroll sebagai "sedikit animasi".
- */
-function ContactReel({
-  src,
-  label,
-  className,
-}: {
-  src: string;
-  label: string;
-  className?: string;
-}) {
-  return (
-    <motion.figure
-      variants={wipeUp}
-      initial="hidden"
-      whileInView="visible"
-      viewport={viewportOnce}
-      aria-hidden="true"
-      className={cn(
-        "pointer-events-none border border-outline-variant bg-white/5 p-2 backdrop-blur-sm",
-        className,
-      )}
-    >
-      <AutoVideo
-        src={src}
-        eager
-        className="aspect-video w-full border border-outline-variant"
-      />
-      <figcaption className="type-label px-1 pb-1 pt-2 text-on-surface-variant">
-        {label} — 666
-      </figcaption>
-    </motion.figure>
-  );
-}
 
 /** Field bottom-border — label mono kiri-atas, focus → accent-666 + glyph,
  *  error zod inline di bawah garis (REFACTOR-06) */

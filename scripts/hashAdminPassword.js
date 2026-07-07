@@ -1,11 +1,23 @@
+/**
+ * Script dev: hash ulang password admin dan update di DB.
+ * Jalankan: node scripts/hashAdminPassword.js
+ *
+ * Catatan: script ini CJS dan tidak bisa import ESM lib/prisma.ts langsung.
+ * Menggunakan PrismaClient langsung aman untuk script CLI one-shot
+ * (bukan server — tidak ada pool leak karena proses langsung exit).
+ */
 const bcrypt = require('bcryptjs');
 const { PrismaClient } = require('@prisma/client');
 
-const globalForPrisma = globalThis;
-if (!globalForPrisma.__prisma) {
-  globalForPrisma.__prisma = new PrismaClient();
+const url = process.env.DATABASE_URL;
+if (!url) {
+  console.error('[hashAdminPassword] ERROR: DATABASE_URL belum di-set di environment');
+  process.exit(1);
 }
-const prisma = globalForPrisma.__prisma;
+
+const prisma = new PrismaClient({
+  log: ['error'],
+});
 
 (async () => {
   try {
@@ -18,5 +30,7 @@ const prisma = globalForPrisma.__prisma;
   } catch (e) {
     console.error('ERROR', e);
     process.exit(1);
+  } finally {
+    await prisma.$disconnect();
   }
 })();

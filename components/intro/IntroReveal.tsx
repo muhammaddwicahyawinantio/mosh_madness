@@ -6,7 +6,6 @@ import Image from "next/image";
 import { motion } from "motion/react";
 import { SplitText } from "@/components/shared/SplitText";
 import { ASSETS, BRAND } from "@/lib/constants";
-import { logoNeedsWhiten } from "@/lib/utils";
 import { useMediaQuery } from "@/lib/useMediaQuery";
 import {
   duration,
@@ -24,9 +23,8 @@ const REVEAL_END =
   WORDMARK_DELAY + CHAR_COUNT * staggerChar + duration.base;
 
 /* Logo mitra di ujung kiri bawah intro — bentuk bebas (bukan chip bulat),
-   tanpa background. Logo gelap-monokrom (kucing dwiscript, banner navy
-   polihasnur) dijadikan siluet putih; emblem HIMATI yang berwarna dibiarkan
-   apa adanya (lihat logoNeedsWhiten) supaya identitasnya tetap kebaca. */
+   tanpa background. Tampil apa adanya sesuai foto asli — tidak ada filter
+   putih. PNG transparan = transparan, logo berwarna = warnanya kelihatan. */
 const INTRO_LOGOS = [
   { src: ASSETS.sponsor.himati, alt: "HIMA TI Politeknik Hasnur" },
   { src: ASSETS.sponsor.polihasnur, alt: "Politeknik Hasnur" },
@@ -134,11 +132,9 @@ export function IntroReveal() {
             alt={logo.alt}
             width={140}
             height={40}
-            className={
-              logoNeedsWhiten(logo.src)
-                ? "h-7 w-auto object-contain opacity-80 [filter:brightness(0)_invert(1)] md:h-9"
-                : "h-8 w-auto object-contain opacity-90 md:h-10"
-            }
+            // Tidak ada filter — logo tampil apa adanya dari foto asli.
+            // PNG transparan → transparan di background hitam intro.
+            className="h-7 w-auto object-contain opacity-90 md:h-10"
           />
         ))}
       </motion.div>

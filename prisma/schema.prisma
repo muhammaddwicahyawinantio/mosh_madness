@@ -1,5 +1,8 @@
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  // binaryTargets wajib untuk deploy Docker ke Railway (node:22-slim = debian-openssl-3.0.x).
+  // "native" menjaga agar dev lokal (Windows/Mac) tetap berjalan normal.
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
 }
 
 datasource db {

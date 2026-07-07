@@ -7,8 +7,8 @@ import { cn } from "@/lib/utils";
 
 /** kiri.mp4 kartu kiri-atas, kanan.mp4 kartu kanan-bawah (FRONTEND.md §2.4) */
 const CARDS = [
-  { src: "/assets/videos/kiri.mp4", label: "Reel / kiri", offset: "" },
-  { src: "/assets/videos/kanan.mp4", label: "Reel / kanan", offset: "lg:mt-32" },
+  { src: "/assets/videos/kiri.mp4", label: "Reel / Mosh", offset: "" },
+  { src: "/assets/videos/kanan.mp4", label: "Reel / Madness", offset: "lg:mt-16" },
 ] as const;
 
 /**
@@ -35,7 +35,7 @@ export function VideoCards({ className }: { className?: string }) {
           >
             <AutoVideo
               src={card.src}
-              className="aspect-video w-full border border-outline-variant"
+              className="aspect-video w-full border border-outline-variant lg:aspect-[16/7]"
             />
             <figcaption className="type-label px-1 pb-1 pt-3 text-on-surface-variant">
               {card.label} — 666

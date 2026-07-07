@@ -14,17 +14,6 @@ export function formatRupiah(value: number): string {
   }).format(value);
 }
 
-/**
- * Logo mitra gelap-monokrom (siluet hitam/navy) → dijadikan siluet putih
- * lewat filter, biar kebaca di background gelap TANPA perlu kartu/kotak
- * ("bebas no background"). Logo berwarna (mis. emblem HIMATI) dibiarkan
- * apa adanya. Heuristik dari nama file aset statis; default (upload admin
- * yang tak dikenal) = tidak diubah, tampil apa adanya.
- */
-const DARK_LOGO_HINTS = ["dwiscript", "polihasnur"];
-export function logoNeedsWhiten(url: string): boolean {
-  return DARK_LOGO_HINTS.some((hint) => url.includes(hint));
-}
 
 /** "Spøkelse Guardians!" → "spokelse-guardians" */
 export function slugify(value: string): string {

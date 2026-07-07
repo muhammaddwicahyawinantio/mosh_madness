@@ -70,6 +70,6 @@ COPY --from=builder --chown=node:node /app/node_modules/prisma ./node_modules/pr
 USER node
 EXPOSE 3000
 
-# migrate deploy: terapkan migrasi yang belum dijalankan, lalu start server
-# Ini berjalan SETELAH container Railway mendapat DATABASE_URL dari environment.
-CMD ["sh", "-c", "npx prisma migrate deploy && node server.js"]
+# Runtime hanya menjalankan server. Migrasi DB dijalankan manual dari lokal,
+# bukan saat container start (runtime tidak butuh CLI prisma).
+CMD ["node", "server.js"]

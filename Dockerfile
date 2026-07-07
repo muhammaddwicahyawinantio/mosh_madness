@@ -19,8 +19,8 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 COPY package*.json ./
-# Install semua deps (termasuk devDeps untuk build)
-RUN npm install
+# Install semua deps (tanpa menjalankan postinstall script yang butuh folder prisma)
+RUN npm install --ignore-scripts
 
 # ---------- Stage 2: builder ----------
 FROM node:22-slim AS builder

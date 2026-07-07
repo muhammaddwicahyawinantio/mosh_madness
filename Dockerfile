@@ -18,9 +18,9 @@ RUN apt-get update && \
     apt-get install -y openssl libssl-dev ca-certificates && \
     rm -rf /var/lib/apt/lists/*
 
-COPY package.json package-lock.json ./
+COPY package*.json ./
 # Install semua deps (termasuk devDeps untuk build)
-RUN npm ci
+RUN npm install
 
 # ---------- Stage 2: builder ----------
 FROM node:22-slim AS builder

@@ -92,7 +92,7 @@ export function ProductSelector() {
         <>
           <ProductCarousel3D products={products} />
           <p className="type-label mt-6 text-center text-outline">
-            Seret untuk memutar — klik untuk lihat detail
+            Scroll / seret untuk memutar — klik untuk lihat detail
           </p>
         </>
       )}

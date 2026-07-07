@@ -1,41 +1,49 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/auth";
-import { getImageKit, IMAGEKIT_FOLDER } from "@/lib/imagekit";
+import { ALLOWED_UPLOAD, MAX_UPLOAD_SIZE, saveUpload } from "@/lib/media";
+import type { ApiError, MediaAssetDTO } from "@/types/api";
 
 export const dynamic = "force-dynamic";
 
-const MAX_SIZE = 8 * 1024 * 1024; // 8MB
-const ALLOWED = new Set(["image/jpeg", "image/png", "image/webp", "image/avif"]);
-
+/** Upload file → storage project + row MediaAsset (BACKEND.md §3/§5). */
 export async function POST(req: NextRequest) {
   if (!(await requireAdmin())) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json<ApiError>({ error: "Unauthorized" }, { status: 401 });
   }
 
   const formData = await req.formData().catch(() => null);
   const file = formData?.get("file");
   if (!(file instanceof File)) {
-    return NextResponse.json({ error: "File tidak ditemukan" }, { status: 400 });
+    return NextResponse.json<ApiError>(
+      { error: "File tidak ditemukan" },
+      { status: 400 },
+    );
   }
-  if (!ALLOWED.has(file.type)) {
-    return NextResponse.json(
+  if (!ALLOWED_UPLOAD.has(file.type)) {
+    return NextResponse.json<ApiError>(
       { error: "Format harus JPEG/PNG/WebP/AVIF" },
       { status: 400 },
     );
   }
-  if (file.size > MAX_SIZE) {
-    return NextResponse.json({ error: "Maksimal 8MB" }, { status: 400 });
+  if (file.size > MAX_UPLOAD_SIZE) {
+    return NextResponse.json<ApiError>({ error: "Maksimal 8MB" }, { status: 400 });
   }
 
-  const buffer = Buffer.from(await file.arrayBuffer());
-  const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+  const altRaw = formData?.get("alt");
+  const alt = typeof altRaw === "string" ? altRaw.slice(0, 300) : "";
 
-  const result = await getImageKit().upload({
-    file: buffer,
-    fileName: safeName,
-    folder: IMAGEKIT_FOLDER,
-    useUniqueFileName: true,
-  });
-
-  return NextResponse.json({ url: result.url, fileId: result.fileId });
+  const asset = await saveUpload(file, alt);
+  return NextResponse.json<MediaAssetDTO>(
+    {
+      id: asset.id,
+      url: asset.url,
+      alt: asset.alt,
+      mime: asset.mime,
+      width: asset.width,
+      height: asset.height,
+      size: asset.size,
+      createdAt: asset.createdAt.toISOString(),
+    },
+    { status: 201 },
+  );
 }

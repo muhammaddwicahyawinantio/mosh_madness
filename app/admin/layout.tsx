@@ -13,6 +13,11 @@ export const metadata: Metadata = {
 const ADMIN_NAV = [
   { label: "Dashboard", href: "/admin" },
   { label: "Produk", href: "/admin/products" },
+  { label: "Hero", href: "/admin/hero" },
+  { label: "Sponsor", href: "/admin/sponsors" },
+  { label: "Konten", href: "/admin/content" },
+  { label: "Pesan", href: "/admin/messages" },
+  { label: "Media", href: "/admin/media" },
 ] as const;
 
 export default async function AdminLayout({

@@ -16,10 +16,12 @@ const deathStinger = localFont({
   display: "swap",
 });
 
-/* Semua sisanya — body, label teknis, price (distressed blackletter) */
-const holdMoney = localFont({
-  src: "./fonts/hold-money-regular.ttf",
-  variable: "--font-hold-money",
+/* Semua sisanya — body, label teknis, price. Keputusan REFACTOR-07 (C):
+   Creepster menggantikan Hold Money (yang lisensinya demo/personal-use).
+   Self-hosted woff2, TANPA <link> Google Fonts — sesuai arsitektur font. */
+const creepster = localFont({
+  src: "./fonts/creepster-regular.woff2",
+  variable: "--font-creepster",
   weight: "400",
   display: "swap",
 });
@@ -39,7 +41,7 @@ export default function RootLayout({
   return (
     <html
       lang="id"
-      className={`dark ${deathStinger.variable} ${holdMoney.variable} h-full`}
+      className={`dark ${deathStinger.variable} ${creepster.variable} h-full`}
     >
       <body className="grain flex min-h-full flex-col">
         <SmoothScrollProvider>

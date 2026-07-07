@@ -1,6 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import { IntroReveal } from "@/components/intro/IntroReveal";
 import { Navbar } from "@/components/shared/Navbar";
 import { Footer } from "@/components/shared/Footer";
 
@@ -16,6 +17,7 @@ export function SiteChrome({ children }: { children: React.ReactNode }) {
 
   return (
     <>
+      <IntroReveal />
       <Navbar />
       <div className="flex flex-1 flex-col">{children}</div>
       <Footer />

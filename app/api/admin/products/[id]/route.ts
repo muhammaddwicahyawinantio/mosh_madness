@@ -1,62 +1,95 @@
 import { NextRequest, NextResponse } from "next/server";
+import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/auth";
 import { productUpdateSchema } from "@/lib/validators";
-import { getImageKit } from "@/lib/imagekit";
+import { adminProductInclude, toAdminProductDTO } from "@/lib/products";
+import type { ApiError } from "@/types/api";
 
 export const dynamic = "force-dynamic";
 
 type Params = { params: Promise<{ id: string }> };
 
+export async function GET(_req: NextRequest, { params }: Params) {
+  if (!(await requireAdmin())) {
+    return NextResponse.json<ApiError>({ error: "Unauthorized" }, { status: 401 });
+  }
+  const { id } = await params;
+
+  const product = await prisma.product.findUnique({
+    where: { id },
+    include: adminProductInclude,
+  });
+  if (!product) {
+    return NextResponse.json<ApiError>(
+      { error: "Produk tidak ditemukan" },
+      { status: 404 },
+    );
+  }
+  return NextResponse.json(toAdminProductDTO(product));
+}
+
 export async function PATCH(req: NextRequest, { params }: Params) {
   if (!(await requireAdmin())) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json<ApiError>({ error: "Unauthorized" }, { status: 401 });
   }
   const { id } = await params;
 
   const body: unknown = await req.json().catch(() => null);
   const parsed = productUpdateSchema.safeParse(body);
   if (!parsed.success) {
-    return NextResponse.json(
+    return NextResponse.json<ApiError>(
       { error: parsed.error.issues[0]?.message ?? "Input tidak valid" },
       { status: 400 },
     );
   }
 
-  const existing = await prisma.product.findUnique({ where: { id } });
-  if (!existing) {
-    return NextResponse.json({ error: "Produk tidak ditemukan" }, { status: 404 });
+  try {
+    const product = await prisma.product.update({
+      where: { id },
+      data: parsed.data,
+      include: adminProductInclude,
+    });
+    return NextResponse.json(toAdminProductDTO(product));
+  } catch (err) {
+    if (err instanceof Prisma.PrismaClientKnownRequestError) {
+      if (err.code === "P2025") {
+        return NextResponse.json<ApiError>(
+          { error: "Produk tidak ditemukan" },
+          { status: 404 },
+        );
+      }
+      if (err.code === "P2002") {
+        return NextResponse.json<ApiError>(
+          { error: "Slug sudah dipakai produk lain" },
+          { status: 409 },
+        );
+      }
+    }
+    throw err;
   }
-
-  // Kalau gambar diganti, hapus file lama di ImageKit (best-effort)
-  const newFileId = parsed.data.imageFileId;
-  if (newFileId && existing.imageFileId && newFileId !== existing.imageFileId) {
-    await getImageKit()
-      .deleteFile(existing.imageFileId)
-      .catch(() => undefined);
-  }
-
-  const product = await prisma.product.update({ where: { id }, data: parsed.data });
-  return NextResponse.json(product);
 }
 
+/** Hapus produk — row image ikut (cascade), file media tetap di library. */
 export async function DELETE(_req: NextRequest, { params }: Params) {
   if (!(await requireAdmin())) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json<ApiError>({ error: "Unauthorized" }, { status: 401 });
   }
   const { id } = await params;
 
-  const existing = await prisma.product.findUnique({ where: { id } });
-  if (!existing) {
-    return NextResponse.json({ error: "Produk tidak ditemukan" }, { status: 404 });
+  try {
+    await prisma.product.delete({ where: { id } });
+  } catch (err) {
+    if (
+      err instanceof Prisma.PrismaClientKnownRequestError &&
+      err.code === "P2025"
+    ) {
+      return NextResponse.json<ApiError>(
+        { error: "Produk tidak ditemukan" },
+        { status: 404 },
+      );
+    }
+    throw err;
   }
-
-  if (existing.imageFileId) {
-    await getImageKit()
-      .deleteFile(existing.imageFileId)
-      .catch(() => undefined); // file mungkin sudah tidak ada — jangan blokir delete
-  }
-
-  await prisma.product.delete({ where: { id } });
   return NextResponse.json({ ok: true });
 }

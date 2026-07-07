@@ -39,12 +39,13 @@ export const ASSETS = {
   sponsor: {
     himati: "/assets/sponsor/logo_himati.png",
     polihasnur: "/assets/sponsor/logo_polihasnur.png",
+    dwiscript: "/assets/sponsor/dwiscript.png",
   },
 } as const;
 
 /**
  * Foto dummy sementara (picsum, grayscale — sesuai imagery desaturated
- * DESIGN.md §9). TODO(Ilham): ganti dengan foto asli via ImageKit,
+ * DESIGN.md §9). TODO(Ilham): ganti dengan foto asli via /admin/media,
  * cukup update URL di sini.
  */
 export const DUMMY_IMAGES = {

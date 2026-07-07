@@ -8,24 +8,133 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Product {
-  id          String   @id @default(cuid())
-  title       String
-  subtitle    String?
-  /// Harga dalam Rupiah, tanpa desimal
-  price       Int
-  /// URL delivery ImageKit
-  imageUrl    String   @db.VarChar(500)
-  /// fileId ImageKit — dipakai untuk hapus file saat produk dihapus
-  imageFileId String?
-  /// Toggle admin: tampil di Section 3 home
-  showOnHome  Boolean  @default(false)
-  sortOrder   Int      @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+// ---------- MEDIA (storage project sendiri — BACKEND.md §3) ----------
 
-  @@index([showOnHome, sortOrder])
+model MediaAsset {
+  id        String   @id @default(cuid())
+  /// Path di storage ("2026/uuid.webp") atau marker asset statis ("static/assets/…")
+  key       String   @unique
+  /// URL publik: "/media/…" (upload) atau "/assets/…" (statis di /public)
+  url       String   @db.VarChar(500)
+  alt       String   @default("")
+  mime      String
+  width     Int?
+  height    Int?
+  /// bytes
+  size      Int
+  createdAt DateTime @default(now())
+
+  productImages ProductImage[]
+  heroMedia     HeroMedia[]
+  sponsors      Sponsor[]
 }
+
+// ---------- PRODUCT ----------
+
+model Product {
+  id          String        @id @default(cuid())
+  name        String
+  slug        String        @unique
+  description String        @db.Text
+  /// Rupiah, integer — hindari float
+  price       Int
+  /// Harga coret (diskon)
+  compareAt   Int?
+  currency    String        @default("IDR")
+  category    String?
+  status      ProductStatus @default(DRAFT)
+
+  /// Muncul di bestseller/home
+  showInHome     Boolean @default(false)
+  /// Masuk ZoomParallax (max 7 dijaga di API)
+  showInParallax Boolean @default(false)
+
+  images    ProductImage[]
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+
+  @@index([status, showInHome])
+  @@index([status, showInParallax])
+}
+
+model ProductImage {
+  id        String     @id @default(cuid())
+  productId String
+  product   Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
+  mediaId   String
+  media     MediaAsset @relation(fields: [mediaId], references: [id])
+  /// Varian utama — dipakai parallax & kartu
+  isPrimary Boolean    @default(false)
+  sort      Int        @default(0)
+
+  @@index([productId, isPrimary])
+  @@index([productId, sort])
+}
+
+enum ProductStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+// ---------- HERO (2-image swap) ----------
+
+model HeroMedia {
+  id      String      @id @default(cuid())
+  variant HeroVariant
+  mediaId String
+  media   MediaAsset  @relation(fields: [mediaId], references: [id])
+  sort    Int         @default(0)
+  active  Boolean     @default(true)
+
+  @@index([variant, active])
+}
+
+enum HeroVariant {
+  BLACK
+  WHITE
+}
+
+// ---------- SPONSOR / LOGO ----------
+
+model Sponsor {
+  id      String     @id @default(cuid())
+  name    String
+  mediaId String
+  media   MediaAsset @relation(fields: [mediaId], references: [id])
+  link    String?
+  sort    Int        @default(0)
+  active  Boolean    @default(true)
+
+  @@index([active, sort])
+}
+
+// ---------- TEKS SECTION (editable copy) ----------
+
+model SiteContent {
+  id        String   @id @default(cuid())
+  /// "hero.word", "about.writer", "marquee.about", "contact.address", …
+  key       String   @unique
+  value     String   @db.Text
+  updatedAt DateTime @updatedAt
+}
+
+// ---------- CONTACT ----------
+
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String   @db.VarChar(120)
+  /// Email atau nomor WhatsApp — kanal balasan
+  email     String   @db.VarChar(160)
+  subject   String?  @db.VarChar(160)
+  message   String   @db.Text
+  handled   Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([handled, createdAt])
+}
+
+// ---------- EXISTING (pertahankan) ----------
 
 model VisitLog {
   id          Int      @id @default(autoincrement())

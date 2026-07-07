@@ -72,23 +72,23 @@ typography:
     fontWeight: '400'
     lineHeight: 32px
   body-lg:
-    fontFamily: Hold Money
+    fontFamily: Creepster
     fontSize: 18px
     fontWeight: '400'
     lineHeight: 28px
   body-md:
-    fontFamily: Hold Money
+    fontFamily: Creepster
     fontSize: 16px
     fontWeight: '400'
     lineHeight: 24px
   label-caps:
-    fontFamily: Hold Money
+    fontFamily: Creepster
     fontSize: 12px
     fontWeight: '500'
     lineHeight: 16px
     letterSpacing: 0.1em
   price:
-    fontFamily: Hold Money
+    fontFamily: Creepster
     fontSize: 24px
     fontWeight: '400'
     lineHeight: 24px
@@ -115,9 +115,10 @@ The palette is intentionally restricted to maintain a stark, authoritative prese
 ## Typography
 Typography is the primary driver of the brand's attitude.
 - **Death Stinger** is the "voice" of the brand — a bold blackletter/gothic display face used exclusively for large-scale headlines: the hero headline, section titles (`display-xl`, `headline-lg`, `headline-lg-mobile`, `headline-md`). It should be used at large scales, often overlapping images or bleeding off the edge of the container to create a sense of scale. Reserved for "big text" moments only — never for body copy or small UI labels, since its density and grunge texture only read clearly at large sizes.
-- **Hold Money** carries everything else — body copy, product descriptions, technical labels (SKUs, sizes, materials), and price tags (`body-lg`, `body-md`, `label-caps`, `price`). Its rough, distressed blackletter character keeps the grunge/technical utilitarian layer consistent even at smaller sizes.
+- **Creepster** carries everything else — body copy, product descriptions, technical labels (SKUs, sizes, materials), and price tags (`body-lg`, `body-md`, `label-caps`, `price`). Decided in REFACTOR-07 (option C): it replaces Hold Money in this slot. Self-hosted woff2 at `app/fonts/creepster-regular.woff2` — never load it via a Google Fonts `<link>`.
 
-> ⚠️ **Licensing note:** the `HoldMoney-Regular.ttf` currently on hand is a **demo build, personal-use only** (per the font's own ReadMe) — it is not licensed for a commercial storefront. The commercial license needs to be purchased at alitdesign.net before this typeface ships to production. Confirm the commercial license status of Death Stinger as well before launch.
+> ✅ **Licensing note:** Creepster is published under the SIL Open Font License — free for commercial use, so the old Hold Money demo-license problem is gone (`hold-money-regular.ttf` is kept on disk but no longer referenced). Confirm the commercial license status of Death Stinger before launch.
+> ⚠️ **Readability note:** Creepster is a display face; at `body-md` (16px) and `label-caps` (12px) sizes, watch real screens for legibility — if body copy strains, consider limiting Creepster to labels/price and picking a quieter body face.
 
 ## Layout & Spacing
 The layout follows a **Fixed 12-Column Grid** for desktop and a **4-Column Grid** for mobile. 

@@ -59,6 +59,10 @@
 
   /* Radius 0 — identitas brutalist (DESIGN.md §5) */
   --radius: 0rem;
+
+  /* easeBrand (lib/motion.ts easeBrandCss) sebagai token CSS —
+     untuk transition/animation non-Framer */
+  --ease-brand: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @theme inline {
@@ -108,10 +112,11 @@
   --radius-xl: 0rem;
 
   /* Typography roles (FONT.md) — font vars diisi next/font di layout.
-     Death Stinger = display; Hold Money = body + label teknis + price. */
+     Death Stinger = display; Creepster = body + label teknis + price
+     (REFACTOR-07 keputusan C: menggantikan Hold Money). */
   --font-display: var(--font-death-stinger), serif;
-  --font-body: var(--font-hold-money), sans-serif;
-  --font-mono: var(--font-hold-money), monospace;
+  --font-body: var(--font-creepster), sans-serif;
+  --font-mono: var(--font-creepster), monospace;
 
   --breakpoint-xl: 1440px;
 }
@@ -186,7 +191,7 @@ body {
 }
 
 .type-price {
-  font-family: var(--font-body); /* FONT.md: price = Hold Money */
+  font-family: var(--font-body); /* FONT.md: price = Creepster (REFACTOR-07) */
   font-size: 1.5rem;
   line-height: 1;
 }
@@ -242,6 +247,74 @@ body {
 .marquee-track {
   animation: marquee var(--marquee-duration, 15s) linear infinite;
   will-change: transform;
+}
+
+/* ============================================================
+   BURUNG HERO — CSS murni (REVISI hero), tanpa canvas/JS per frame.
+   Semua durasi/delay dari lib/motion.ts (heroBirds) via CSS vars.
+   ============================================================ */
+
+/* Lintasan horizontal penuh viewport — loop, arah bisa reverse */
+@keyframes bird-drift {
+  from {
+    transform: translateX(-14vw);
+  }
+  to {
+    transform: translateX(114vw);
+  }
+}
+
+/* Bob vertikal pelan — burung "mengambang" di arus udara */
+@keyframes bird-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(16px);
+  }
+}
+
+/* Kepak sayap — siluet dipipihkan vertikal secara ritmis */
+@keyframes bird-flap {
+  0%,
+  100% {
+    transform: scaleY(1);
+  }
+  50% {
+    transform: scaleY(0.4);
+  }
+}
+
+/* Lapisan fly-up: saat container dapat .birds-away (scroll ke bawah),
+   tiap burung meluncur ke atas layar — smooth, stagger via delay */
+.bird-flyup {
+  transition:
+    transform var(--birds-fly, 1.4s) var(--ease-brand),
+    opacity var(--birds-fly, 1.4s) var(--ease-brand);
+  transition-delay: var(--bird-fly-delay, 0s);
+}
+
+.birds-away .bird-flyup {
+  transform: translateY(-130vh);
+  opacity: 0;
+}
+
+.bird-drift {
+  animation: bird-drift var(--bird-drift, 32s) linear infinite;
+  animation-delay: var(--bird-delay, 0s);
+  will-change: transform;
+}
+
+.bird-bob {
+  animation: bird-bob var(--bird-bob, 5.5s) ease-in-out infinite;
+  animation-delay: var(--bird-delay, 0s);
+}
+
+.bird-flap {
+  animation: bird-flap var(--bird-flap, 0.9s) ease-in-out infinite;
+  animation-delay: var(--bird-delay, 0s);
+  transform-origin: center;
 }
 
 @media (prefers-reduced-motion: reduce) {

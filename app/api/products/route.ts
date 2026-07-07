@@ -1,25 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import type { ProductDTO } from "@/types/api";
+import { getPublishedProducts } from "@/lib/products";
 
 export const dynamic = "force-dynamic";
 
+const flag = (v: string | null) => v === "1" || v === "true";
+
 export async function GET(req: NextRequest) {
-  const homeOnly = req.nextUrl.searchParams.get("home") === "true";
-
-  const products = await prisma.product.findMany({
-    where: homeOnly ? { showOnHome: true } : undefined,
-    orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
-    select: {
-      id: true,
-      title: true,
-      subtitle: true,
-      price: true,
-      imageUrl: true,
-      showOnHome: true,
-      sortOrder: true,
-    },
+  const sp = req.nextUrl.searchParams;
+  const products = await getPublishedProducts({
+    home: flag(sp.get("home")),
+    parallax: flag(sp.get("parallax")),
+    category: sp.get("category") ?? undefined,
   });
-
-  return NextResponse.json<ProductDTO[]>(products);
+  return NextResponse.json(products);
 }

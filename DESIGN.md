@@ -79,13 +79,16 @@ Konstanta di `/lib/motion.ts` — dilarang hardcode duration/easing di komponen.
 **Scroll:** Lenis (`lerp ~0.1`) + `useScroll`/`useTransform` Framer Motion untuk parallax. Reveal pattern standar: `clip-path` wipe atau translate-y 24px + fade, `easeBrand`, sekali saja (`once: true`).
 
 **Signature moments** (di sinilah boldness dihabiskan — sisanya disiplin):
-1. Hero: crossfade garment hitam↔putih mengikuti pointer + particle boids.
+1. Hero (REVISI): soft reveal mengikuti kursor — mask radial feather lembut
+   TANPA bentuk lingkaran terlihat (spring berbobot, ditarik ke titik tengah
+   objek manusia) membuka garment putih di bawah garment hitam + burung
+   siluet CSS murni yang terbang ke atas layar saat scroll turun.
 2. About: deep parallax zoom (scale 1 → 1.15 scroll-linked).
 3. Sponsor: R3F tilt/float 3D pada logo.
 
 **Performa & aksesibilitas (hard rules):**
-- `prefers-reduced-motion` → matikan particle, 3D idle-loop, marquee auto-scroll; sisakan fade sederhana.
-- Particle: canvas 2D, max ~60 partikel desktop / ~25 mobile, `requestAnimationFrame` pause saat off-viewport / tab hidden.
+- `prefers-reduced-motion` → matikan burung, blob reveal, 3D idle-loop, marquee auto-scroll; sisakan fade sederhana.
+- Burung hero: elemen DOM + CSS keyframes murni (tanpa rAF), max 16 desktop / 8 mobile (`heroBirds` di lib/motion.ts).
 - R3F: `dpr={[1, 1.5]}`, `frameloop="demand"` kalau memungkinkan, lazy mount on in-view.
 - Hanya animasikan `transform` & `opacity`. No layout thrash.
 
@@ -111,5 +114,5 @@ Semua section dites di 390 / 768 / 1024 / 1440. No horizontal overflow, ever.
 
 ## 9. Imagery
 - Foto produk/model: high-contrast, desaturated, hard-crop. No soft mask, no fade edges.
-- Hero: `herosection_black.jpeg` / `herosection_white.jpeg` (sudah ada) — crossfade pair.
+- Hero: `herosection_black.jpeg` / `herosection_white.jpeg` (sudah ada) — pair blob reveal (hitam dasar, putih ter-reveal di bawah kursor).
 - Delivery via ImageKit dengan transformation params (`f-auto,q-80,w-{size}`); ukuran responsif per breakpoint.

@@ -1,64 +1,80 @@
-@AGENTS.md
+# CLAUDE.md — Mosh Madness
 
-# Mosh Madness — Project Context
+Brand fashion streetwear premium, dark-artistic. Owner: Ilham (Banjarmasin, est. 16 Mei 2024).
+File ini dibaca Claude Code tiap sesi. Untuk detail, buka spec di bawah.
 
-Kamu adalah senior full-stack engineer + creative frontend developer untuk project
-"Mosh Madness" (brand fashion streetwear premium, dark-artistic tone, owner: Ilham,
-Banjarmasin, berdiri 16 Mei 2024).
+## Spec files (WAJIB dibaca sebelum ngoding)
+- `DESIGN.md`          → SOURCE OF TRUTH visual (token warna, font, motion). Jangan ditimpa.
+- `FRONTEND.md`        → spec 5 halaman + animasi (hero, about, product, sponsor, contact).
+- `BACKEND.md`         → Prisma, API, admin CMS, media storage, Docker/Railway.
+- `REFACTOR-PROMPT.md` → urutan fase eksekusi.
 
-## Tech stack (TETAP — jangan diganti kecuali diminta eksplisit)
-Next.js 16 (App Router) + React + TypeScript, Tailwind CSS v4, Framer Motion (`motion`),
-Lenis smooth scroll, ImageKit sebagai asset manager, MySQL + Prisma ORM
-(mode `queryCompiler` + `driverAdapters` — engine-free, WAJIB dipertahankan karena
-binary Prisma diblokir di beberapa environment build), shadcn/ui sebagai base
-component, NextAuth v5 untuk admin auth, Docker untuk deploy ke Railway.
+---
 
-## Aturan kerja
-1. Sebelum ngoding fitur besar, breakdown dulu ke checklist singkat.
-2. Cek dulu file/asset yang sudah ada di project sebelum minta upload ulang
-   atau bikin placeholder baru — lihat `public/assets/*`.
-3. TypeScript strict, tanpa `any` liar. Struktur: `/app`, `/components`, `/lib`,
-   `/prisma`, `/types`.
-4. Semua animasi wajib pakai konstanta di `lib/motion.ts` (easing/duration) —
-   dilarang hardcode timing baru atau animasi generik (fade-in polos, bounce standar).
-5. Wajib responsive (mobile/tablet/desktop), animasi berat (particle, 3D, parallax)
-   harus tetap ringan — cek `prefers-reduced-motion`.
-6. Data produk/harga/toggle home HARUS dari Prisma/MySQL via API — jangan hardcode.
-7. Kalau ragu soal keputusan desain/teknis signifikan, tanya dulu ke Ilham,
-   jangan asumsi lalu rewrite besar-besaran belakangan.
-8. Tiap selesai satu fase/fitur: jelasin singkat apa yang berubah, file apa yang
-   disentuh, dan langkah manual yang perlu Ilham lakukan (env, migrasi, dst).
-9. Jangan hapus/overwrite kode yang sudah jalan tanpa alasan jelas — kalau
-   refactor besar, jelaskan dulu alasannya.
+## GOVERNING PHILOSOPHY — PONYTAIL (berlaku ke SEMUA kode di repo ini)
+Sebelum nulis kode apa pun, berhenti di rung pertama yang keisi:
+```
+1. Perlu ada nggak?            → nggak: skip (YAGNI)
+2. Sudah ada di codebase?      → reuse, jangan tulis ulang
+3. Native platform / stdlib?   → pakai itu
+4. Dependency sudah ada?       → pakai
+5. Bisa 1 baris?               → 1 baris
+6. Baru: tulis minimum yang jalan
+```
+Lazy soal SOLUSI. **TIDAK PERNAH lazy** soal: validasi trust-boundary, error handling, pencegahan data-loss, security, accessibility. Empat hal itu jangan pernah dipotong.
+Prinsip: less code = less bug = gampang maintain. Jangan bikin abstraksi/config/wrapper yang belum dibutuhkan. Kalau ragu apakah suatu kode perlu → default-nya JANGAN tulis, tanya dulu.
 
-Bahasa komunikasi: santai, Bahasa Indonesia, to the point. Kode & komentar teknis
-boleh Bahasa Inggris standar industri.
+> Kalau plugin ponytail asli sudah keinstall, jalankan `/ponytail-review` di tiap diff besar. Kalau belum bisa (env nggak support `/plugin`), cukup patuhi tangga di atas secara manual.
 
-## Dokumen wajib dibaca sebelum kerja
-- `PLAN.md` — roadmap 9 fase + checklist. **Phase 0, 1, 2 sudah selesai & terverifikasi**
-  (build sukses, `tsc --noEmit` strict sukses, lint bersih). Lanjut dari **Phase 3**.
-- `DESIGN.md` — design system lengkap (warna, tipografi, spacing, animasi, breakpoint).
-  Semua keputusan visual harus konsisten dengan ini.
+---
 
-## Keputusan yang sudah difinalkan (jangan tanya ulang ke Ilham)
-- Auth admin: **NextAuth v5** (Credentials provider + bcrypt ke tabel `AdminUser`,
-  lihat `auth.ts` + `auth.config.ts` + `proxy.ts`).
-- Detail produk: halaman `/product/[id]`, bukan modal.
-- Realtime Section 3 home: **SWR polling** (~15 detik) + revalidate on focus,
-  bukan websocket.
+## ATURAN KERJA (dari Ilham)
+1. Fitur besar → breakdown checklist dulu, konfirmasi, baru koding.
+2. Cek asset yang sudah ada di repo dulu — jangan minta upload ulang / bikin placeholder kalau sudah ada.
+3. TypeScript strict, no `any` liar. Folder `/app /components /lib /prisma /types`.
+4. Animasi premium & custom (pakai `EASE`/`DUR` di `lib/motion.ts`). Dilarang "AI slop".
+5. Responsive semua breakpoint + ringan (60fps). Animasi berat = desktop-first, degrade di mobile. Hormati `prefers-reduced-motion`.
+6. Data (produk/harga/toggle/hero/sponsor/teks) HARUS dari DB via API — jangan hardcode.
+7. Ragu soal keputusan signifikan → tanya dulu, jangan asumsi lalu re-write besar.
+8. Selesai fase → lapor singkat: apa berubah, file mana, langkah manual (env/migrasi).
+9. Jangan overwrite kode yang jalan tanpa alasan.
+Bahasa: santai, Indonesia; kode & komentar teknis English standar.
 
-## Status asset (`public/assets/`)
-- `sponsor/logo_himati.png`, `sponsor/logo_polihasnur.png` — **sudah ada, siap pakai**.
-- `hero/` — cek dulu apakah file sudah ditaruh Ilham. Asset asli bernama
-  `herosection_black.jpeg` / `herosection_white.jpeg` — boleh dipakai langsung
-  dengan ekstensi `.jpeg`, cukup sesuaikan path di `lib/constants.ts`.
-  JANGAN asumsi harus di-convert ke `.png`.
-- `about/`, `reference/` — kemungkinan belum ada. Kalau kosong, pakai komponen
-  fallback (`SafeImage`, buat kalau belum ada) yang render placeholder proporsional
-  dengan tone dark-editorial — JANGAN crash kalau file belum ada.
+---
 
-## Catatan lingkungan lokal
-- `.env` Ilham pakai MySQL lokal. Sebelum lanjut fitur baru, pastikan
-  `npm run dev` jalan tanpa error di terminal Ilham.
-- Kalau nambah dependency baru, selalu jalankan `npx tsc --noEmit` +
-  `npm run build` sebelum lapor "selesai".
+## TECH STACK (tetap)
+Next.js App Router + React + TS strict · Tailwind · Framer Motion · Lenis · shadcn/ui ·
+MySQL + Prisma (engine-free `queryCompiler + driverAdapters`) · NextAuth v5 · Docker → Railway.
+Routing pakai `proxy.ts` (BUKAN `middleware.ts`, Next 16).
+
+⚠ **ImageKit DIHAPUS dari project ini.** Media/upload masuk **storage project sendiri**
+(`MediaAsset` + serve `/media/[...]`, di Railway pakai Volume). Lihat `BACKEND.md §3`.
+Catatan: kalau ada template lama yang masih nyebut "ImageKit sebagai asset manager", itu
+sudah tidak berlaku — ikut file ini.
+
+---
+
+## DECISIONS — LOCKED
+- Font Opsi A: Death Stinger (display) · Bebas (headline) · Hanken (body) · JetBrains (data/`666`) · Creepster (aksen, maks 1–2).
+- Bird field = rAF ringan · Scroll-lock About = pin/sticky + skip · Contact → DB (`ContactMessage`) muncul di `/admin`.
+- Admin = CMS penuh, FULL CRUD CUSTOM IMAGE (product, hero 2-image, sponsor/logo, teks section, contact, media).
+
+## ASET yang sudah ada di repo
+```
+public/assets/products/  → 1312!(.|1).jpg, borneoguardians(.|1|2).jpg, burutality(1|2).jpg,
+                            rajajin.jpg, sacred(1|2).jpg, sinister(1|2).jpg,
+                            spokelse(.|2).jpg, theaddictskull.jpg, turmoil.jpg
+public/assets/sponsor/   → dwiscript.png, logo_himati.png, logo_polihasnur.png
+public/assets/videos/    → kiri.mp4, kanan.mp4
+public/assets/           → herosection_black.jpeg, herosection_white.jpeg
+```
+Produk di-seed ke DB dari file statis ini (lihat `BACKEND.md §4`).
+
+## MASIH KURANG (konfirmasi/upload dulu sebelum fase terkait)
+- Video About: nama `vidsectionabout.mp4` vs `vidboutsection.mp4`? + file belum ada.
+- `about-section.png` (bg fase-1 About) belum ada.
+- Harga & nama resmi produk (isi via `/admin`, sementara DRAFT/placeholder).
+
+## URUTAN FASE (1 fase = 1 sesi)
+P3 shared foundation → P4 backend+seed → P5 admin CMS → P6 hero → P7 about (rebuild 2-fase video)
+→ P8 product+sponsor+contact-preview → P9 /product → P10 /contact → P11 Docker/Railway.

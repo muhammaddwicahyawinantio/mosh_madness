@@ -56,39 +56,50 @@ typography:
     lineHeight: 110px
     letterSpacing: -0.02em
   headline-lg:
-    fontFamily: Death Stinger
+    fontFamily: Bebas Neue
     fontSize: 64px
     fontWeight: '400'
     lineHeight: 60px
     letterSpacing: 0.02em
   headline-lg-mobile:
-    fontFamily: Death Stinger
+    fontFamily: Bebas Neue
     fontSize: 48px
     fontWeight: '400'
     lineHeight: 44px
   headline-md:
-    fontFamily: Death Stinger
+    fontFamily: Bebas Neue
     fontSize: 32px
     fontWeight: '400'
     lineHeight: 32px
   body-lg:
-    fontFamily: Creepster
+    fontFamily: Hanken Grotesk
     fontSize: 18px
     fontWeight: '400'
     lineHeight: 28px
   body-md:
-    fontFamily: Creepster
+    fontFamily: Hanken Grotesk
     fontSize: 16px
     fontWeight: '400'
     lineHeight: 24px
   label-caps:
-    fontFamily: Creepster
+    fontFamily: JetBrains Mono
     fontSize: 12px
     fontWeight: '500'
     lineHeight: 16px
     letterSpacing: 0.1em
+  meta:
+    fontFamily: JetBrains Mono
+    fontSize: 13px
+    fontWeight: '500'
+    lineHeight: 18px
+    letterSpacing: 0.01em
+  accent-metal:
+    fontFamily: Metal Mania
+    fontSize: 20px
+    fontWeight: '400'
+    letterSpacing: 0.04em
   price:
-    fontFamily: Creepster
+    fontFamily: JetBrains Mono
     fontSize: 24px
     fontWeight: '400'
     lineHeight: 24px
@@ -113,12 +124,16 @@ The palette is intentionally restricted to maintain a stark, authoritative prese
 - **Neutral (Grey Scale):** Darker greys (`#1A1A1A`) are used for product card containers to distinguish them slightly from the pure black backdrop. Mid-greys are used for secondary metadata to reduce visual noise.
 
 ## Typography
-Typography is the primary driver of the brand's attitude.
-- **Death Stinger** is the "voice" of the brand — a bold blackletter/gothic display face used exclusively for large-scale headlines: the hero headline, section titles (`display-xl`, `headline-lg`, `headline-lg-mobile`, `headline-md`). It should be used at large scales, often overlapping images or bleeding off the edge of the container to create a sense of scale. Reserved for "big text" moments only — never for body copy or small UI labels, since its density and grunge texture only read clearly at large sizes.
-- **Creepster** carries everything else — body copy, product descriptions, technical labels (SKUs, sizes, materials), and price tags (`body-lg`, `body-md`, `label-caps`, `price`). Decided in REFACTOR-07 (option C): it replaces Hold Money in this slot. Self-hosted woff2 at `app/fonts/creepster-regular.woff2` — never load it via a Google Fonts `<link>`.
+Typography is the primary driver of the brand's attitude. Five roles, each mapped to a CSS token in `globals.css` (`--font-display`, `--font-headline`, `--font-body`, `--font-mono`, `--font-metal`).
+- **Death Stinger** (`--font-display`) is the "voice" of the brand — a bold blackletter/gothic display face reserved for **hero-scale display only**: the hero headline (`display-xl`) and the navbar "MOSH MADNESS" logo. Big-text moments that overlap imagery or bleed off the edge. Never body/labels. Self-hosted `.otf` at `app/fonts/death-stinger.otf`.
+- **Bebas Neue** (`--font-headline`) carries the regular **section headlines** — `headline-lg`, `headline-lg-mobile`, `headline-md` (e.g. "Pilihan barisan depan", footer brand, admin header). Condensed, uppercase, high-impact but calmer than Death Stinger.
+- **Hanken Grotesk** (`--font-body`) is the readable **body** face — manifesto/typewriter copy in About, product descriptions (`body-lg`, `body-md`). Natural case.
+- **JetBrains Mono** (`--font-mono`) is the **utility/data** face — technical labels (`label-caps`, uppercase), price (`price`), and natural-case metadata (`meta`): counters (`004 /`), nav index, footer links, "Sponsored by", copyright.
+- **Metal Mania** (`--font-metal`) is a decorative accent used in **exactly two places**: all marquee strips and the slogan ("Inovasi Digital Untuk Kemandirian UMKM Lokal"). Nowhere else.
 
-> ✅ **Licensing note:** Creepster is published under the SIL Open Font License — free for commercial use, so the old Hold Money demo-license problem is gone (`hold-money-regular.ttf` is kept on disk but no longer referenced). Confirm the commercial license status of Death Stinger before launch.
-> ⚠️ **Readability note:** Creepster is a display face; at `body-md` (16px) and `label-caps` (12px) sizes, watch real screens for legibility — if body copy strains, consider limiting Creepster to labels/price and picking a quieter body face.
+> Bebas Neue, Hanken Grotesk, JetBrains Mono, and Metal Mania load via `next/font/google` (auto self-hosted at build — no external `<link>` at runtime). Death Stinger stays a local `.otf`.
+> ✅ **Licensing note:** Bebas Neue, Hanken Grotesk, JetBrains Mono, Metal Mania are all OFL (free for commercial use). Confirm the commercial license status of Death Stinger before launch.
+> 🗑️ **Removed:** Creepster is no longer used anywhere. The old `app/fonts/creepster-regular.woff2` (and `hold-money-regular.ttf`) remain on disk but are unreferenced.
 
 ## Layout & Spacing
 The layout follows a **Fixed 12-Column Grid** for desktop and a **4-Column Grid** for mobile. 

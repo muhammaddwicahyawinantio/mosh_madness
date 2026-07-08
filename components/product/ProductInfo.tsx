@@ -59,7 +59,7 @@ export function ProductInfo({
         {BRAND.sku} / Rilisan terbatas
       </p>
 
-      <h1 className="type-headline-lg mt-4 text-primary">{product.title}</h1>
+      <h1 className="type-headline-lg type-metal mt-4 text-primary">{product.title}</h1>
 
       {product.subtitle && (
         <p className="type-label mt-3 text-on-surface-variant">

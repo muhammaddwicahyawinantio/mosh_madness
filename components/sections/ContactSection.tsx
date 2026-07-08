@@ -8,7 +8,7 @@ import { ArrowUpRight } from "lucide-react";
 import { SafeImage } from "@/components/shared/SafeImage";
 import { AutoVideo } from "@/components/shared/AutoVideo";
 import { SplitText } from "@/components/shared/SplitText";
-import { ASSETS, BRAND, SOCIAL } from "@/lib/constants";
+import { ASSETS, SOCIAL } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import {
   contactCreateSchema,
@@ -26,9 +26,9 @@ type SubmitStatus = "idle" | "sending" | "sent" | "error";
 
 /** Label tombol per status — swap dengan slide-y signature, bukan spinner */
 const BUTTON_LABEL: Record<SubmitStatus, string> = {
-  idle: "Kirim pesan",
+  idle: "Hubungi kami",
   sending: "Mengirim…",
-  sent: "Diterima — 666",
+  sent: "Terkirim — 666",
   error: "Gagal — coba lagi",
 };
 
@@ -55,7 +55,7 @@ type ContactSectionProps = {
 export function ContactSection({
   whatsapp = SOCIAL.whatsapp,
   instagram = SOCIAL.instagram,
-  address = BRAND.location,
+  address = "Banjarmasin, South Kalimantan",
 }: ContactSectionProps) {
   const {
     register,
@@ -89,9 +89,9 @@ export function ContactSection({
       aria-label="Kontak"
       className="relative isolate overflow-hidden"
     >
-      {/* Background on-brand (studio garment) + scrim gelap biar form kebaca */}
+      {/* Background section contact (contact-section.png) + scrim gelap biar form kebaca */}
       <SafeImage
-        src={ASSETS.about}
+        src={ASSETS.contact}
         alt=""
         aria-hidden="true"
         fill
@@ -139,21 +139,21 @@ export function ContactSection({
           <motion.p variants={revealUp} className="type-label mb-6 text-accent-666">
             003 / Kontak
           </motion.p>
-          <h2 className="type-headline-lg text-primary max-md:text-4xl">
-            <SplitText text="Masuk ke" />
+          <h2 className="type-headline-lg type-metal text-primary max-md:text-4xl">
+            <SplitText text="Get in" />
             <br />
-            <SplitText text="barisan" delay={0.2} />
+            <SplitText text="Touch" delay={0.2} />
           </h2>
           <motion.p
             variants={revealUp}
             className="type-body-lg mt-6 text-on-surface-variant md:mt-8"
           >
-            Kolaborasi, stok, atau sekadar teriak — tulis di sini, kami balas
-            lewat kontak yang lo tinggalin. Mau instan? Tembak langsung ke
-            WhatsApp.
+            Hubungi kami untuk kolaborasi, info stok, atau pertanyaan lainnya
+            melalui form di bawah ini. Untuk layanan instan, silakan hubungi
+            kami langsung via WhatsApp.
           </motion.p>
-          <motion.p variants={revealUp} className="type-label mt-8 text-on-surface-variant">
-            Basecamp — {address}
+          <motion.p variants={revealUp} className="type-meta mt-8 text-on-surface-variant">
+            Basecamp: {address}
           </motion.p>
 
           <motion.div variants={revealUp} className="mt-4 flex gap-6">
@@ -190,7 +190,7 @@ export function ContactSection({
                 id="contact-name"
                 type="text"
                 autoComplete="name"
-                placeholder="Siapa lo"
+                placeholder="Nama lengkap"
                 aria-invalid={errors.name ? true : undefined}
                 className="w-full bg-transparent pb-3 pt-2 text-on-surface outline-none placeholder:text-outline-variant"
                 {...register("name")}
@@ -207,7 +207,7 @@ export function ContactSection({
                 id="contact-contact"
                 type="text"
                 autoComplete="email"
-                placeholder="Biar bisa dibalas"
+                placeholder="Email atau nomor WhatsApp"
                 aria-invalid={errors.email ? true : undefined}
                 className="w-full bg-transparent pb-3 pt-2 text-on-surface outline-none placeholder:text-outline-variant"
                 {...register("email")}
@@ -233,7 +233,7 @@ export function ContactSection({
               <textarea
                 id="contact-message"
                 rows={4}
-                placeholder="Teriak di sini"
+                placeholder="Tulis pesan kamu"
                 aria-invalid={errors.message ? true : undefined}
                 className="w-full resize-none bg-transparent pb-3 pt-2 text-on-surface outline-none placeholder:text-outline-variant"
                 {...register("message")}
@@ -262,9 +262,9 @@ export function ContactSection({
               </button>
               <p className="type-label text-on-surface-variant" role="status">
                 {status === "sent" &&
-                  "Pesan masuk barisan — kami balas secepatnya."}
+                  "Pesan terkirim — kami akan segera membalas."}
                 {status === "error" &&
-                  "Ada yang macet di jalur kami. Coba lagi, atau tembak WhatsApp."}
+                  "Terjadi kendala pada jalur kami. Coba lagi, atau hubungi via WhatsApp."}
               </p>
             </motion.div>
           </form>

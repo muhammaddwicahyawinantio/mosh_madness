@@ -85,7 +85,7 @@ export function AboutSection({ writer }: AboutSectionProps) {
           <AutoVideo src={ABOUT_VIDEO} className="absolute inset-0 h-full w-full" />
           <div aria-hidden="true" className="absolute inset-0 bg-surface-lowest/70" />
           <div className="relative mx-auto max-w-3xl px-4 py-32 md:px-8">
-            <p className="type-label mb-8 text-accent-666">001 / Manifesto</p>
+            <p className="type-meta mb-8 text-accent-666">001 / Manifesto</p>
             {writer.split(/\n+/).map((p, i) => (
               <p key={i} className="type-body-lg mb-5 text-on-surface">
                 {p}
@@ -115,7 +115,7 @@ export function AboutSection({ writer }: AboutSectionProps) {
           <div aria-hidden="true" className="absolute inset-0 bg-surface-lowest/70" />
           <div className="relative flex h-full items-center">
             <div className="mx-auto w-full max-w-3xl px-4 md:px-8">
-              <p className="type-label mb-8 text-accent-666">001 / Manifesto</p>
+              <p className="type-meta mb-8 text-accent-666">001 / Manifesto</p>
               {paragraphs.map((words, pi) => (
                 <p key={pi} className="type-body-lg mb-5 text-on-surface">
                   {words.map(({ word, index }) => (
@@ -189,8 +189,8 @@ function AboutIntroCopy() {
       <p className="type-label mb-6 text-on-surface-variant">
         {BRAND.estCode} — Banjarmasin
       </p>
-      <h2 className="type-display-xl text-primary">Mosh Madness</h2>
-      <p className="type-headline-lg mt-4 text-primary">
+      <h2 className="type-display-xl type-metal text-primary">Mosh Madness</h2>
+      <p className="type-headline-lg type-metal mt-4 text-primary">
         About <span className="text-accent-666">/ 666</span>
       </p>
     </div>

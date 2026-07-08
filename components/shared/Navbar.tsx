@@ -65,7 +65,7 @@ export function Navbar() {
                   <Link
                     href={link.href}
                     className={cn(
-                      "type-label hover-invert block px-3 py-2",
+                      "type-meta hover-invert block px-3 py-2",
                       pathname === link.href
                         ? "text-primary"
                         : "text-on-surface-variant",
@@ -90,7 +90,7 @@ export function Navbar() {
           {/* Kanan: trigger CATALOG */}
           <Link
             href="/product"
-            className="type-label hover-invert group flex items-center gap-1 justify-self-end px-3 py-2 text-primary"
+            className="type-meta hover-invert group flex items-center gap-1 justify-self-end px-3 py-2 text-primary"
           >
             <span className="hidden sm:inline">Catalog</span>
             <span className="sm:hidden">666</span>
@@ -128,7 +128,7 @@ export function Navbar() {
                 >
                   <Link
                     href={link.href}
-                    className="type-headline-lg hover-invert block px-2 py-4 text-primary"
+                    className="type-meta hover-invert block px-2 py-4 text-3xl text-primary"
                     onClick={() => setMenuOpen(false)}
                   >
                     {link.label}
@@ -148,7 +148,7 @@ export function Navbar() {
                   href={SOCIAL.whatsapp}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="type-label hover-invert px-2 py-1 text-primary"
+                  className="type-meta hover-invert px-2 py-1 text-primary"
                 >
                   WhatsApp
                 </a>
@@ -156,7 +156,7 @@ export function Navbar() {
                   href={SOCIAL.instagram}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="type-label hover-invert px-2 py-1 text-primary"
+                  className="type-meta hover-invert px-2 py-1 text-primary"
                 >
                   Instagram
                 </a>

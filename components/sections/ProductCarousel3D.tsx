@@ -73,7 +73,7 @@ const Cylinder = memo(function Cylinder({
               </div>
               {/* Title + harga selalu tampak (REFACTOR-03 card content) */}
               <span className="mt-3 flex flex-col gap-1">
-                <span className="type-label text-primary group-hover:text-on-surface-variant">
+                <span className="type-metal text-lg leading-tight text-primary group-hover:text-on-surface-variant">
                   {product.title}
                 </span>
                 <span className="type-price text-on-surface-variant">
@@ -118,7 +118,7 @@ export function ProductCarousel3D({
               sizes="224px"
               className="object-cover"
             />
-            <span className="type-label absolute inset-x-0 bottom-0 bg-gradient-to-t from-surface-lowest/90 to-transparent p-3 pt-10 text-primary">
+            <span className="type-metal absolute inset-x-0 bottom-0 bg-gradient-to-t from-surface-lowest/90 to-transparent p-3 pt-10 text-base text-primary">
               {product.title} — {formatRupiah(product.price)}
             </span>
           </Link>

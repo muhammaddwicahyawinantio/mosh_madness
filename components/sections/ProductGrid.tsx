@@ -77,10 +77,11 @@ export function ProductGrid() {
                 {String(i + 1).padStart(3, "0")}
               </span>
             </div>
-            {/* Hover invert instan — identitas brutalist */}
-            <div className="hover-invert flex flex-1 items-end justify-between gap-2 border-t border-outline-variant p-4 group-hover:bg-primary group-hover:text-on-primary">
-              <div>
-                <p className="type-headline-md">{product.title}</p>
+            {/* Hover invert instan — identitas brutalist. Mobile: stack
+                judul & harga (cell 2-kolom sempit); desktop: baris seperti semula. */}
+            <div className="hover-invert flex flex-1 flex-col gap-1 border-t border-outline-variant p-3 group-hover:bg-primary group-hover:text-on-primary md:flex-row md:items-end md:justify-between md:gap-2 md:p-4">
+              <div className="min-w-0">
+                <p className="type-metal text-xl uppercase md:text-[2rem]">{product.title}</p>
                 {product.subtitle && (
                   <p className="type-label mt-1 opacity-70">{product.subtitle}</p>
                 )}

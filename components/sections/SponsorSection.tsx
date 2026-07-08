@@ -3,7 +3,7 @@
 import useSWR from "swr";
 import { motion } from "motion/react";
 import { SafeImage } from "@/components/shared/SafeImage";
-import { ASSETS, BRAND } from "@/lib/constants";
+import { BRAND } from "@/lib/constants";
 import { jsonFetcher } from "@/lib/fetcher";
 import { cn } from "@/lib/utils";
 import { revealStagger, revealUp, viewportOnce } from "@/lib/motion";
@@ -43,21 +43,7 @@ export function SponsorSection() {
       aria-label="Didukung oleh"
       className="relative border-t border-outline-variant bg-surface-lowest"
     >
-      {/* Background editorial + scrim */}
-      <SafeImage
-        src={ASSETS.about}
-        alt=""
-        aria-hidden="true"
-        fill
-        sizes="100vw"
-        className="absolute inset-0 object-cover"
-      />
-      <div
-        aria-hidden="true"
-        className="absolute inset-0 bg-gradient-to-b from-surface-lowest via-surface-lowest/75 to-surface-lowest"
-      />
-
-      {/* Konten */}
+      {/* Konten — background polos sesuai tema (surface-lowest) */}
       <div className="relative mx-auto max-w-[1600px] px-4 py-10 md:px-8 md:py-14">
         <motion.div
           variants={revealStagger}
@@ -66,22 +52,22 @@ export function SponsorSection() {
           viewport={viewportOnce}
         >
           {/* Headline utama */}
-          <motion.p variants={revealUp} className="type-label mb-2 text-accent-666">
+          <motion.p variants={revealUp} className="type-meta mb-2 text-accent-666">
             004 / Didukung oleh
           </motion.p>
           <motion.h2
             variants={revealUp}
-            className="type-headline-lg text-primary max-md:text-xl md:text-3xl"
+            className="type-headline-lg type-metal text-primary max-md:text-xl md:text-3xl"
           >
-            Berdiri bareng barisan
+            Partners
           </motion.h2>
 
           {/* "Sponsored by" + subjudul — bagian dari headline block */}
           <motion.div variants={revealUp} className="mt-4 border-t border-outline-variant pt-4">
-            <p className="type-label text-base text-accent-666 md:text-lg">
+            <p className="type-meta text-base text-accent-666 md:text-lg">
               Sponsored by
             </p>
-            <p className="type-label mt-2 text-center text-base text-on-surface-variant md:text-lg">
+            <p className="type-metal mt-2 text-center text-xl text-on-surface-variant md:text-2xl">
               Inovasi Digital Untuk Kemandirian UMKM Lokal
             </p>
           </motion.div>

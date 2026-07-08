@@ -16,7 +16,10 @@ type MarqueeProps = {
  */
 export function Marquee({ text, repeat = 6, className }: MarqueeProps) {
   const items = Array.from({ length: repeat }, (_, i) => (
-    <span key={i} className="type-label px-6 py-2 text-on-primary">
+    <span
+      key={i}
+      className="type-metal px-6 py-2 text-base text-on-primary md:text-lg"
+    >
       {text}
     </span>
   ));

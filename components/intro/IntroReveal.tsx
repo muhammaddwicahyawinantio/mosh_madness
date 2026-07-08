@@ -126,16 +126,18 @@ export function IntroReveal() {
         }}
       >
         {INTRO_LOGOS.map((logo) => (
-          <Image
-            key={logo.src}
-            src={logo.src}
-            alt={logo.alt}
-            width={140}
-            height={40}
-            // Tidak ada filter — logo tampil apa adanya dari foto asli.
-            // PNG transparan → transparan di background hitam intro.
-            className="h-7 w-auto object-contain opacity-90 md:h-10"
-          />
+          // Kotak ukuran tetap + fill (pola sama dgn SponsorSection) — hindari
+          // warning aspect-ratio next/image. object-left biar logo rata kiri.
+          // PNG transparan → transparan di background hitam intro.
+          <div key={logo.src} className="relative h-7 w-24 md:h-10 md:w-32">
+            <Image
+              src={logo.src}
+              alt={logo.alt}
+              fill
+              sizes="128px"
+              className="object-contain object-left opacity-90"
+            />
+          </div>
         ))}
       </motion.div>
     </motion.div>

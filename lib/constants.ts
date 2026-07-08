@@ -35,6 +35,8 @@ export const ASSETS = {
     white: "/assets/hero/hero-white.jpeg",
   },
   about: "/assets/about/about-section.png",
+  product: "/assets/products/product-section.png",
+  contact: "/assets/reference/contact-section.png",
   sponsor: {
     himati: "/assets/sponsor/logo_himati.png",
     polihasnur: "/assets/sponsor/logo_polihasnur.png",

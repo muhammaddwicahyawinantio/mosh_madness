@@ -42,6 +42,7 @@ export function HeroSection({ word }: HeroSectionProps) {
           alt="Mosh Madness — garment hitam"
           fill
           priority
+          quality={90}
           sizes="100vw"
           className="object-cover"
         />

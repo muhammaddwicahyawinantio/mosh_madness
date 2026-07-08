@@ -55,7 +55,7 @@ sudah tidak berlaku — ikut file ini.
 ---
 
 ## DECISIONS — LOCKED
-- Font Opsi A: Death Stinger (display) · Bebas (headline) · Hanken (body) · JetBrains (data/`666`) · Creepster (aksen, maks 1–2).
+- Font Opsi A: Death Stinger (display hero-scale + logo navbar) · Bebas Neue (headline section) · Hanken Grotesk (body + typewriter About) · JetBrains Mono (data/label/counter/nav/`666`) · Metal Mania (aksen — HANYA marquee + slogan). **Creepster DIHAPUS** (bekas woff2 masih di disk tapi tidak direferensikan).
 - Bird field = rAF ringan · Scroll-lock About = pin/sticky + skip · Contact → DB (`ContactMessage`) muncul di `/admin`.
 - Admin = CMS penuh, FULL CRUD CUSTOM IMAGE (product, hero 2-image, sponsor/logo, teks section, contact, media).
 

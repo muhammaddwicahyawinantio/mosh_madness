@@ -1,13 +1,14 @@
 "use client";
 
 import { useRef } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import useSWR from "swr";
 import { motion } from "motion/react";
 import { ArrowUpRight } from "lucide-react";
 import { ProductCarousel3D } from "@/components/sections/ProductCarousel3D";
 import { SplitText } from "@/components/shared/SplitText";
-import { BRAND } from "@/lib/constants";
+import { ASSETS, BRAND } from "@/lib/constants";
 import { jsonFetcher } from "@/lib/fetcher";
 import { duration, revealStagger, revealUp, viewportOnce } from "@/lib/motion";
 import { useSectionProgress } from "@/lib/hooks/useSectionProgress";
@@ -47,11 +48,11 @@ export function ProductSelector() {
       className="mb-12 flex flex-wrap items-end justify-between gap-6"
     >
       <div>
-        <motion.p variants={revealUp} className="type-label mb-6 text-accent-666">
+        <motion.p variants={revealUp} className="type-meta mb-6 text-accent-666">
           002 / Bestseller
         </motion.p>
-        <h2 className="type-headline-lg text-primary">
-          <SplitText text="Pilihan barisan depan" />
+        <h2 className="type-headline-lg type-metal text-primary">
+          <SplitText text="Clothing Brand" />
         </h2>
       </div>
       <motion.div variants={revealUp}>
@@ -124,7 +125,8 @@ export function ProductSelector() {
       className="relative h-[250vh] bg-surface"
     >
       <div className="sticky top-0 flex h-svh flex-col justify-center overflow-hidden px-4 py-16 md:px-8">
-        <div className="mx-auto w-full max-w-[1600px]">
+        <ProductBackdrop />
+        <div className="relative z-10 mx-auto w-full max-w-[1600px]">
           <span
             aria-hidden="true"
             className="type-label text-vertical absolute left-2 top-24 hidden text-outline lg:block"
@@ -139,5 +141,29 @@ export function ProductSelector() {
         </div>
       </div>
     </section>
+  );
+}
+
+/**
+ * Background section product — `product-section.png` di belakang konten
+ * (z-0, konten z-10). Opacity rendah + mix-blend biar carousel & teks tetap
+ * kebaca; pointer-events off supaya tidak ganggu hover/tap card. Ikut pola
+ * background editorial section About.
+ */
+function ProductBackdrop() {
+  return (
+    <div
+      aria-hidden="true"
+      className="pointer-events-none absolute inset-0 z-0 overflow-hidden"
+    >
+      <Image
+        src={ASSETS.product}
+        alt=""
+        fill
+        sizes="100vw"
+        className="object-cover opacity-40 mix-blend-luminosity"
+      />
+      <div className="absolute inset-0 bg-gradient-to-b from-surface via-surface/70 to-surface" />
+    </div>
   );
 }

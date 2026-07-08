@@ -1,14 +1,21 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import {
+  Bebas_Neue,
+  Hanken_Grotesk,
+  JetBrains_Mono,
+  Metal_Mania,
+} from "next/font/google";
 import { BRAND } from "@/lib/constants";
 import { SmoothScrollProvider } from "@/components/shared/SmoothScrollProvider";
 import { SiteChrome } from "@/components/shared/SiteChrome";
 import { TrackVisit } from "@/components/shared/TrackVisit";
 import "./globals.css";
 
-/* Self-hosted — brand fonts (FONT.md). Build tidak tergantung font eksternal. */
+/* Brand fonts (FONT.md). Death Stinger self-hosted; sisanya via next/font/google
+   (auto self-hosted saat build — tetap tanpa <link> Google eksternal). */
 
-/* "Voice" brand — blackletter/gothic, khusus headline besar */
+/* "Voice" brand — blackletter/gothic, KHUSUS display hero-scale + logo navbar */
 const deathStinger = localFont({
   src: "./fonts/death-stinger.otf",
   variable: "--font-death-stinger",
@@ -16,13 +23,33 @@ const deathStinger = localFont({
   display: "swap",
 });
 
-/* Semua sisanya — body, label teknis, price. Keputusan REFACTOR-07 (C):
-   Creepster menggantikan Hold Money (yang lisensinya demo/personal-use).
-   Self-hosted woff2, TANPA <link> Google Fonts — sesuai arsitektur font. */
-const creepster = localFont({
-  src: "./fonts/creepster-regular.woff2",
-  variable: "--font-creepster",
+/* Headline "biasa" — judul section, footer brand, header admin */
+const bebasNeue = Bebas_Neue({
+  subsets: ["latin"],
   weight: "400",
+  variable: "--font-bebas",
+  display: "swap",
+});
+
+/* Body & typewriter About — readable sans, natural case */
+const hankenGrotesk = Hanken_Grotesk({
+  subsets: ["latin"],
+  variable: "--font-hanken",
+  display: "swap",
+});
+
+/* Utility/data — label teknis, counter, nav, price */
+const jetBrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-jetbrains",
+  display: "swap",
+});
+
+/* Aksen — HANYA marquee + slogan (FONT.md aturan pemakaian) */
+const metalMania = Metal_Mania({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-metal-mania",
   display: "swap",
 });
 
@@ -41,7 +68,7 @@ export default function RootLayout({
   return (
     <html
       lang="id"
-      className={`dark ${deathStinger.variable} ${creepster.variable} h-full`}
+      className={`dark ${deathStinger.variable} ${bebasNeue.variable} ${hankenGrotesk.variable} ${jetBrainsMono.variable} ${metalMania.variable} h-full`}
     >
       <body className="grain flex min-h-full flex-col">
         <SmoothScrollProvider>

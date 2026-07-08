@@ -4,8 +4,9 @@ import Link from "next/link";
 import { motion } from "motion/react";
 import { ArrowUpRight } from "lucide-react";
 import { AutoVideo } from "@/components/shared/AutoVideo";
+import { SafeImage } from "@/components/shared/SafeImage";
 import { SplitText } from "@/components/shared/SplitText";
-import { BRAND } from "@/lib/constants";
+import { ASSETS, BRAND } from "@/lib/constants";
 import { revealStagger, revealUp, viewportOnce, wipeUp } from "@/lib/motion";
 
 /**
@@ -19,8 +20,27 @@ export function ContactPreview() {
     <section
       id="contact"
       aria-label="Kontak"
-      className="relative mx-auto max-w-[1400px] px-4 py-28 md:px-8 md:py-32"
+      className="relative overflow-hidden"
     >
+      {/* Background section contact (contact-section.png) + scrim biar teks kebaca */}
+      <SafeImage
+        src={ASSETS.contact}
+        alt=""
+        aria-hidden="true"
+        fill
+        sizes="100vw"
+        className="-z-10 object-cover"
+      />
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 -z-10 bg-surface-lowest/88"
+      />
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 -z-10 bg-gradient-to-b from-surface-lowest via-transparent to-surface-lowest"
+      />
+
+      <div className="relative mx-auto max-w-[1400px] px-4 py-28 md:px-8 md:py-32">
       <span
         aria-hidden="true"
         className="type-label text-vertical absolute left-2 top-32 hidden text-outline lg:block"
@@ -40,14 +60,15 @@ export function ContactPreview() {
           <motion.p variants={revealUp} className="type-label mb-6 text-accent-666">
             003 / Kontak
           </motion.p>
-          <h2 className="type-headline-lg text-primary">
-            <SplitText text="Masuk ke barisan" />
+          <h2 className="type-headline-lg type-metal text-primary">
+            <SplitText text="Get in Touch" />
           </h2>
           <motion.p
             variants={revealUp}
             className="type-body-lg mt-8 max-w-md text-on-surface-variant"
           >
-            Kolaborasi, stok, atau sekadar teriak — pintunya di halaman kontak.
+            Untuk kolaborasi, info stok, atau pertanyaan lainnya, kunjungi
+            halaman kontak kami.
           </motion.p>
 
           <motion.div variants={revealUp} className="mt-12">
@@ -55,7 +76,7 @@ export function ContactPreview() {
               href="/contact"
               className="type-label inline-flex items-center gap-2 border border-primary bg-primary px-8 py-4 text-on-primary hover:bg-transparent hover:text-primary"
             >
-              Kirim pesan <ArrowUpRight size={14} />
+              Hubungi kami <ArrowUpRight size={14} />
             </Link>
           </motion.div>
         </div>
@@ -75,6 +96,7 @@ export function ContactPreview() {
           </figcaption>
         </motion.figure>
       </motion.div>
+      </div>
     </section>
   );
 }

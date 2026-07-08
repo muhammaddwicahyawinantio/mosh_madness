@@ -132,6 +132,7 @@ export function HeroReveal({ sectionRef }: Props) {
         src={ASSETS.hero.white}
         alt="Mosh Madness — garment putih"
         fill
+        quality={90}
         sizes="100vw"
         className="object-cover"
       />

@@ -112,11 +112,14 @@
   --radius-xl: 0rem;
 
   /* Typography roles (FONT.md) — font vars diisi next/font di layout.
-     Death Stinger = display; Creepster = body + label teknis + price
-     (REFACTOR-07 keputusan C: menggantikan Hold Money). */
+     Death Stinger = display hero-scale + logo; Bebas Neue = headline section;
+     Hanken = body + typewriter; JetBrains = label/counter/nav/price;
+     Metal Mania = HANYA marquee + slogan. */
   --font-display: var(--font-death-stinger), serif;
-  --font-body: var(--font-creepster), sans-serif;
-  --font-mono: var(--font-creepster), monospace;
+  --font-headline: var(--font-bebas), sans-serif;
+  --font-body: var(--font-hanken), sans-serif;
+  --font-mono: var(--font-jetbrains), monospace;
+  --font-metal: var(--font-metal-mania), cursive;
 
   --breakpoint-xl: 1440px;
 }
@@ -159,7 +162,7 @@ body {
 }
 
 .type-headline-lg {
-  font-family: var(--font-display);
+  font-family: var(--font-headline);
   font-weight: 400;
   letter-spacing: 0.02em;
   line-height: 0.94;
@@ -168,7 +171,7 @@ body {
 }
 
 .type-headline-md {
-  font-family: var(--font-display);
+  font-family: var(--font-headline);
   font-weight: 400;
   font-size: 2rem;
   line-height: 1;
@@ -190,8 +193,28 @@ body {
   text-transform: uppercase;
 }
 
+/* Utility natural-case (FONT.md 2.3) — JetBrains, TANPA uppercase paksa.
+   Counter, nav index, footer link, "Sponsored by", copyright. */
+.type-meta {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  letter-spacing: 0.01em;
+}
+
+/* Aksen Metal Mania — marquee, slogan, judul section & nama produk.
+   Dipakai sebagai modifier di samping type-headline-* (menang font-family
+   & line-height karena didefinisikan setelahnya). */
+.type-metal {
+  font-family: var(--font-metal);
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  line-height: 1.1;
+}
+
 .type-price {
-  font-family: var(--font-body); /* FONT.md: price = Creepster (REFACTOR-07) */
+  font-family: var(--font-mono); /* FONT.md: price = data/JetBrains */
   font-size: 1.5rem;
   line-height: 1;
 }

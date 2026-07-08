@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { auth } from "@/auth";
 import { logoutAction } from "@/app/admin/actions";
+import { AdminMobileMenu } from "@/components/admin/AdminMobileMenu";
 import { Button } from "@/components/ui/button";
 import { BRAND } from "@/lib/constants";
 
@@ -30,16 +31,17 @@ export default async function AdminLayout({
 
   return (
     <div className="flex min-h-svh flex-col bg-surface">
-      <header className="border-b border-outline-variant bg-surface-container">
+      <header className="relative border-b border-outline-variant bg-surface-container">
         <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4">
-          <div className="flex items-center gap-6">
-            <p className="type-headline-md italic text-primary">
+          <div className="flex items-center gap-3 md:gap-6">
+            <AdminMobileMenu nav={ADMIN_NAV} />
+            <p className="font-headline text-xl italic uppercase leading-none text-primary md:text-[2rem]">
               {BRAND.name}
               <span className="type-label ml-2 align-middle not-italic text-accent-666">
                 Admin
               </span>
             </p>
-            <nav aria-label="Admin" className="flex items-center gap-1">
+            <nav aria-label="Admin" className="hidden items-center gap-1 md:flex">
               {ADMIN_NAV.map((item) => (
                 <Link
                   key={item.href}
